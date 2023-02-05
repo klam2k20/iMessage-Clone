@@ -5,6 +5,7 @@ import Auth from "../components/Auth/Auth";
 import Chat from "../components/Chat/Chat";
 
 const Home: NextPage = () => {
+  // : aliases data to session
   const { data: session } = useSession();
   return (
     <Box>
