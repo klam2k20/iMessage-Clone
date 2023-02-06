@@ -2,6 +2,9 @@ import { ApolloServer } from 'apollo-server-express';
 import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 import express from 'express';
 import http from 'http';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import typeDefs from './graphql/typeDefs';
+import resolvers from './graphql/resolvers';
 
 /**
  * A GraphQL schema defines the entity types - a description of the data
@@ -11,15 +14,13 @@ import http from 'http';
  * purpose of having a schema is to make sure our GraphQL API is type safe.
  * Any requests to and any entities being sent to or returned from our API
  * most match a defined entity or operation type
- * @param typeDefs defines the entity types
- * @param resolvers defines the operation types
  */
-async function startApolloServer(typeDefs, resolvers) {
+async function startApolloServer() {
   const app = express();
   const httpServer = http.createServer(app);
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
   const server = new ApolloServer({
-    typeDefs,
-    resolvers,
+    schema: schema,
     csrfPrevention: true,
     cache: 'bounded',
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer }), ApolloServerPluginLandingPageLocalDefault({ embed: true })],
