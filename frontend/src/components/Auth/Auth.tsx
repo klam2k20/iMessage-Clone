@@ -2,7 +2,7 @@ import { Button, Stack, Text, Input, Center } from "@chakra-ui/react";
 import { Session } from "next-auth";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 
 interface IAuthProps {
   session: Session | null;
@@ -28,7 +28,7 @@ const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
   return (
     <Center h='100vh'>
       <Stack align='center' spacing='1rem'>
-        {session?.user ? (
+        {session ? (
           <>
             <Text fontSize='3xl'>Create Username</Text>
             <Input
@@ -39,6 +39,9 @@ const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
             />
             <Button w='100%' onClick={onSubmit}>
               Save
+            </Button>
+            <Button w='100%' onClick={() => signOut()}>
+              Logout
             </Button>
           </>
         ) : (
