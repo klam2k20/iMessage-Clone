@@ -2,13 +2,14 @@ import { Button, Stack, Text, Input, Center } from "@chakra-ui/react";
 import { Session } from "next-auth";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
-import { signIn, signOut } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import userOperations from "@/src/graphql/operations/user";
 import { useMutation } from "@apollo/client";
 import {
   CreateUsernameResponse,
   CreateUsernameVariables,
 } from "@/src/util/types";
+import { toast } from "react-hot-toast";
 
 interface IAuthProps {
   session: Session | null;
@@ -17,16 +18,24 @@ interface IAuthProps {
 
 const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
   const [username, setUsername] = useState("");
-  const [createUsername, { data, loading, error }] = useMutation<
+  const [createUsername, { loading, error }] = useMutation<
     CreateUsernameResponse,
     CreateUsernameVariables
   >(userOperations.Mutations.createUsername);
 
   const onSubmit = async () => {
-    try {
-      await createUsername({ variables: { username } });
-    } catch (error) {
-      console.log("onSubmit Error", error);
+    if (username) {
+      try {
+        const { data } = await createUsername({ variables: { username } });
+        if (!data?.createUsername) throw new Error();
+        if (data?.createUsername.error)
+          throw new Error(data?.createUsername.error);
+        toast.success("Successfully Registered Username");
+        reloadSession();
+      } catch (error: any) {
+        toast.error(error.message);
+        console.log("onSubmit Error", error.message);
+      }
     }
   };
 
@@ -44,9 +53,6 @@ const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
             />
             <Button w='100%' onClick={onSubmit}>
               Save
-            </Button>
-            <Button w='100%' onClick={() => signOut()}>
-              Logout
             </Button>
           </>
         ) : (

@@ -7,12 +7,24 @@ import Chat from "../components/Chat/Chat";
 const Home: NextPage = () => {
   // : aliases data to session
   const { data: session } = useSession();
+
+  /**
+   * After creating a username the user is
+   * switched over to the Chat page so we trigger
+   * a visibilitychange event. The event also
+   * causes the NextAuth callback to run which gets
+   * the updated session user with its username
+   */
+  const reloadSession = () => {
+    const e = new Event("visibilitychange");
+    document.dispatchEvent(e);
+  };
   return (
     <Box>
       {session?.user.username ? (
         <Chat />
       ) : (
-        <Auth session={session} reloadSession={() => {}} />
+        <Auth session={session} reloadSession={reloadSession} />
       )}
     </Box>
   );
