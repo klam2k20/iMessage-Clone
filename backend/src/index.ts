@@ -19,6 +19,10 @@ async function startApolloServer() {
   const app = express();
   const httpServer = http.createServer(app);
   const schema = makeExecutableSchema({ typeDefs, resolvers });
+  const corsOption = {
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }
   const server = new ApolloServer({
     schema: schema,
     csrfPrevention: true,
@@ -26,7 +30,7 @@ async function startApolloServer() {
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer }), ApolloServerPluginLandingPageLocalDefault({ embed: true })],
   });
   await server.start();
-  server.applyMiddleware({ app });
+  server.applyMiddleware({ app, cors: corsOption });
   await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
 }
