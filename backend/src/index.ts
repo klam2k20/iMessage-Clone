@@ -3,8 +3,13 @@ import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageLocalDe
 import express from 'express';
 import http from 'http';
 import { makeExecutableSchema } from '@graphql-tools/schema';
+import { PrismaClient } from '@prisma/client'
+import * as dotenv from 'dotenv';
+import { getSession } from "next-auth/react";
 import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
+import { GraphQLContext, Session } from './util/types';
+
 
 /**
  * A GraphQL schema defines the entity types - a description of the data
@@ -16,17 +21,28 @@ import resolvers from './graphql/resolvers';
  * most match a defined entity or operation type
  */
 async function startApolloServer() {
+  dotenv.config();
+
   const app = express();
   const httpServer = http.createServer(app);
+  const prisma = new PrismaClient();
   const schema = makeExecutableSchema({ typeDefs, resolvers });
   const corsOption = {
-    origin: 'http://localhost:3000',
+    origin: process.env.CLIENT_ORIGIN,
     credentials: true,
   }
   const server = new ApolloServer({
     schema: schema,
     csrfPrevention: true,
     cache: 'bounded',
+    context: async ({ req }): Promise<GraphQLContext> => {
+      /**
+       * Create a context that contains the current session
+       * info and the prisma client to interact with the DB
+       */
+      const session = await getSession({ req }) as Session;
+      return { session, prisma };
+    },
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer }), ApolloServerPluginLandingPageLocalDefault({ embed: true })],
   });
   await server.start();
