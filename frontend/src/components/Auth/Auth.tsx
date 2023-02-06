@@ -3,6 +3,12 @@ import { Session } from "next-auth";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
 import { signIn, signOut } from "next-auth/react";
+import userOperations from "@/src/graphql/operations/user";
+import { useMutation } from "@apollo/client";
+import {
+  CreateUsernameResponse,
+  CreateUsernameVariables,
+} from "@/src/util/types";
 
 interface IAuthProps {
   session: Session | null;
@@ -11,15 +17,14 @@ interface IAuthProps {
 
 const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
   const [username, setUsername] = useState("");
+  const [createUsername, { data, loading, error }] = useMutation<
+    CreateUsernameResponse,
+    CreateUsernameVariables
+  >(userOperations.Mutations.createUsername);
 
   const onSubmit = async () => {
     try {
-      /**
-       * Send update request to GraphQL to update the next-auth
-       * user object to include username in the DB. Then call
-       * reload session to grab the username in the DB and add
-       * it to the next-auth obj
-       */
+      await createUsername({ variables: { username } });
     } catch (error) {
       console.log("onSubmit Error", error);
     }
