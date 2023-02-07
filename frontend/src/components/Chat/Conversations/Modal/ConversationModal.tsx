@@ -1,5 +1,11 @@
-import { SearchedUser, SearchUserResponse, SearchUserVariables } from "@/src/util/types";
-import { useLazyQuery } from "@apollo/client";
+import {
+  CreateConversationResponse,
+  CreateConversationVariables,
+  SearchedUser,
+  SearchUserResponse,
+  SearchUserVariables,
+} from "@/src/util/types";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import {
   Button,
   Modal,
@@ -14,7 +20,9 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { FormEvent, useState } from "react";
+import { toast } from "react-hot-toast";
 import userOperations from "../../../../graphql/operations/user";
+import conversationOperations from "../../../../graphql/operations/conversation";
 import ParticipantList from "./ParticipantList";
 import SearchedUserList from "./SearchedUserList";
 
@@ -30,10 +38,24 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose 
     SearchUserResponse,
     SearchUserVariables
   >(userOperations.Queries.searchUsers);
+  const [createConversation, { loading: createConversationLoading }] = useMutation<
+    CreateConversationResponse,
+    CreateConversationVariables
+  >(conversationOperations.Mutations.createConversation);
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
     searchUser({ variables: { username } });
+  };
+
+  const onCreateConversation = async () => {
+    const participantIds = participants.map((p) => p.id);
+    try {
+      await createConversation({ variables: { participants: participantIds } });
+    } catch (error: any) {
+      console.log("onCreateConversation Error", error.message);
+      toast.error(error.message);
+    }
   };
 
   const addParticipant = (user: SearchedUser) => {
@@ -73,7 +95,14 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose 
             {participants.length > 0 && (
               <ParticipantList participants={participants} removeParticipant={removeParticipant} />
             )}
-            <Button mt={4} w='100%' cursor='pointer' bg='brand.100' _hover={{ bg: "brand.100" }}>
+            <Button
+              mt={4}
+              w='100%'
+              cursor='pointer'
+              bg='brand.100'
+              _hover={{ bg: "brand.100" }}
+              onClick={onCreateConversation}
+              isLoading={createConversationLoading}>
               Create Conversation
             </Button>
           </ModalBody>
