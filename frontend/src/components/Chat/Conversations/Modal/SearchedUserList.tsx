@@ -26,7 +26,9 @@ const SearchedUserList: React.FunctionComponent<ISearchedUserListProps> = ({ use
               <Avatar src='' name={user.username} />
               <Flex w='100%' justify='space-between' align='center'>
                 <Text>{user.username}</Text>
-                <Button bg='brand.100'>Select</Button>
+                <Button bg='brand.100' _hover={{ bg: "brand.100" }}>
+                  Select
+                </Button>
               </Flex>
             </Flex>
           ))}
