@@ -10,6 +10,7 @@ const typeDefs = gql`
     success: Boolean
     error: String
   }
+  
   type Query {
     searchUsers(username: String): [SearchedUser]
   }
