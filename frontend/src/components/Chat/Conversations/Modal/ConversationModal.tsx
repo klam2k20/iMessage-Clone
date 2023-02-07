@@ -8,7 +8,10 @@ import {
   ModalBody,
   ModalFooter,
   Text,
+  Input,
+  Stack,
 } from "@chakra-ui/react";
+import { FormEvent, useState } from "react";
 
 interface IConversationModalProps {
   isOpen: boolean;
@@ -16,15 +19,33 @@ interface IConversationModalProps {
 }
 
 const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose }) => {
+  const [username, setUsername] = useState("");
+
+  const onSearch = (e: FormEvent) => {
+    e.preventDefault();
+    console.log(username);
+  };
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent bg='2d2d2d' pb={4}>
           <ModalHeader>Modal Title</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>Conversation Modal</Text>
+            <form onSubmit={onSearch}>
+              <Stack spacing={4}>
+                <Input
+                  placeholder='Enter Username'
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+                <Button type='submit' isDisabled={!username}>
+                  Search
+                </Button>
+              </Stack>
+            </form>
           </ModalBody>
         </ModalContent>
       </Modal>
