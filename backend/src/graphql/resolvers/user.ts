@@ -5,7 +5,6 @@ import { CreateUsernameResponse, GraphQLContext } from "../../util/types";
 const resolvers = {
   Query: {
     searchUsers: async (_: any, args: { username: string }, context: GraphQLContext): Promise<Array<User>> => {
-      console.log('INSIDE SEARCH USER BACKEDND');
       const { username: searchUsername } = args;
       const { session, prisma } = context;
       if (!session?.user) throw new ApolloError('Unauthorized');
