@@ -25,13 +25,15 @@ import userOperations from "../../../../graphql/operations/user";
 import conversationOperations from "../../../../graphql/operations/conversation";
 import ParticipantList from "./ParticipantList";
 import SearchedUserList from "./SearchedUserList";
+import { Session } from "next-auth";
 
 interface IConversationModalProps {
+  session: Session;
   isOpen: boolean;
   onClose: () => void;
 }
 
-const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose }) => {
+const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen, onClose }) => {
   const [username, setUsername] = useState("");
   const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
   const [searchUser, { data, loading, error }] = useLazyQuery<
@@ -42,6 +44,9 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose 
     CreateConversationResponse,
     CreateConversationVariables
   >(conversationOperations.Mutations.createConversation);
+  const {
+    user: { id: userId },
+  } = session;
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -49,12 +54,14 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose 
   };
 
   const onCreateConversation = async () => {
-    const participantIds = participants.map((p) => p.id);
-    try {
-      await createConversation({ variables: { participants: participantIds } });
-    } catch (error: any) {
-      console.log("onCreateConversation Error", error.message);
-      toast.error(error.message);
+    if (participants.length >= 1) {
+      const participantIds = [userId, ...participants.map((p) => p.id)];
+      try {
+        await createConversation({ variables: { participants: participantIds } });
+      } catch (error: any) {
+        console.log("onCreateConversation Error", error.message);
+        toast.error(error.message);
+      }
     }
   };
 
