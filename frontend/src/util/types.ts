@@ -8,3 +8,16 @@ export interface CreateUsernameResponse {
 export interface CreateUsernameVariables {
   username: string;
 }
+
+export interface SearchUserResponse {
+  searchUser: Array<SearchUser>;
+}
+
+export interface SearchUserVariables {
+  username: string;
+}
+
+export interface SearchUser {
+  id: string;
+  username: string;
+}
