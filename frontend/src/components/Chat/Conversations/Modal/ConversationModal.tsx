@@ -26,9 +26,12 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose 
   const [searchUser, { data, loading, error }] = useLazyQuery<
     SearchUserResponse,
     SearchUserVariables
-  >(userOperations.Queries.searchUser);
+  >(userOperations.Queries.searchUsers);
+
+  console.log("search user data", data);
 
   const onSearch = (e: FormEvent) => {
+    console.log("searching");
     e.preventDefault();
     searchUser({ variables: { username } });
   };
@@ -48,7 +51,7 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose 
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
-                <Button type='submit' isDisabled={!username}>
+                <Button type='submit' isDisabled={!username} isLoading={loading}>
                   Search
                 </Button>
               </Stack>
