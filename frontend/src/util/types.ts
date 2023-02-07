@@ -10,7 +10,7 @@ export interface CreateUsernameVariables {
 }
 
 export interface SearchUserResponse {
-  searchUser: Array<SearchedUser>;
+  searchUsers: Array<SearchedUser>;
 }
 
 export interface SearchUserVariables {

@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { FormEvent, useState } from "react";
 import userOperations from "../../../../graphql/operations/user";
+import SearchedUserList from "./SearchedUserList";
 
 interface IConversationModalProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose 
     searchUser({ variables: { username } });
   };
 
+  console.log("search data", data);
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -53,6 +55,7 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose 
                 </Button>
               </Stack>
             </form>
+            {data?.searchUsers && <SearchedUserList users={data.searchUsers} />}
           </ModalBody>
         </ModalContent>
       </Modal>
