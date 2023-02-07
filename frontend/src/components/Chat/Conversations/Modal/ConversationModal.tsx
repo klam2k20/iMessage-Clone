@@ -1,4 +1,4 @@
-import { SearchUserResponse, SearchUserVariables } from "@/src/util/types";
+import { SearchedUser, SearchUserResponse, SearchUserVariables } from "@/src/util/types";
 import { useLazyQuery } from "@apollo/client";
 import {
   Button,
@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { FormEvent, useState } from "react";
 import userOperations from "../../../../graphql/operations/user";
+import ParticipantList from "./ParticipantList";
 import SearchedUserList from "./SearchedUserList";
 
 interface IConversationModalProps {
@@ -24,6 +25,7 @@ interface IConversationModalProps {
 
 const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose }) => {
   const [username, setUsername] = useState("");
+  const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
   const [searchUser, { data, loading, error }] = useLazyQuery<
     SearchUserResponse,
     SearchUserVariables
@@ -34,7 +36,17 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose 
     searchUser({ variables: { username } });
   };
 
-  console.log("search data", data);
+  const addParticipant = (user: SearchedUser) => {
+    if (!participants.some((p) => p.id === user.id)) {
+      setParticipants((pre) => [...pre, user]);
+      setUsername("");
+    }
+  };
+
+  const removeParticipant = (userId: string) => {
+    setParticipants((pre) => pre.filter((p) => p.id !== userId));
+  };
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -55,7 +67,15 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ isOpen, onClose 
                 </Button>
               </Stack>
             </form>
-            {data?.searchUsers && <SearchedUserList users={data.searchUsers} />}
+            {data?.searchUsers && (
+              <SearchedUserList users={data.searchUsers} addParticipant={addParticipant} />
+            )}
+            {participants.length > 0 && (
+              <ParticipantList participants={participants} removeParticipant={removeParticipant} />
+            )}
+            <Button mt={4} w='100%' cursor='pointer' bg='brand.100' _hover={{ bg: "brand.100" }}>
+              Create Conversation
+            </Button>
           </ModalBody>
         </ModalContent>
       </Modal>
