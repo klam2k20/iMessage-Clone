@@ -46,7 +46,8 @@ async function startApolloServer() {
 
   // WebSocketServer start listening.
   const serverCleanup = useServer({
-    schema, context: async (cxt: SubscriptionContext): Promise<GraphQLContext> => {
+    schema,
+    context: async (cxt: SubscriptionContext): Promise<GraphQLContext> => {
       if (cxt.connectParams && cxt.connectParams.session) {
         const { session } = cxt.connectParams;
         return { session, prisma, pubsub };
