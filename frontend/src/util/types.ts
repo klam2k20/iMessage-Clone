@@ -1,3 +1,7 @@
+import {
+  ConversationPopulated,
+} from "../../../backend/src/util/types";
+
 /**
  * User Interfaces
  */
@@ -36,4 +40,8 @@ export interface CreateConversationResponse {
 
 export interface CreateConversationVariables {
   participants: Array<string>;
+}
+export interface ConversationsResponse {
+  conversations: Array<ConversationPopulated>;
+
 }

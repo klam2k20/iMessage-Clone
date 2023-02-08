@@ -8,25 +8,23 @@ import {
 import { useLazyQuery, useMutation } from '@apollo/client';
 import {
   Button,
+  Input,
   Modal,
-  ModalOverlay,
+  ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  Text,
-  Input,
+  ModalOverlay,
   Stack,
 } from '@chakra-ui/react';
-import { FormEvent, useState } from 'react';
-import { toast } from 'react-hot-toast';
-import userOperations from '../../../../graphql/operations/user';
-import conversationOperations from '../../../../graphql/operations/conversation';
-import ParticipantList from './ParticipantList';
-import SearchedUserList from './SearchedUserList';
 import { Session } from 'next-auth';
 import { useRouter } from 'next/router';
+import { FormEvent, useState } from 'react';
+import { toast } from 'react-hot-toast';
+import conversationOperations from '../../../../graphql/operations/conversation';
+import userOperations from '../../../../graphql/operations/user';
+import ParticipantList from './ParticipantList';
+import SearchedUserList from './SearchedUserList';
 
 interface IConversationModalProps {
   session: Session;
