@@ -1,8 +1,32 @@
 import { Prisma } from "@prisma/client";
 import { ApolloError } from "apollo-server-core";
-import { GraphQLContext } from "../../util/types";
+import { ConversationPopulated, GraphQLContext } from "../../util/types";
 
 const resolvers = {
+  Query: {
+    conversations: async (_: any, __: any, context: GraphQLContext): Promise<Array<ConversationPopulated>> => {
+      const { session, prisma } = context;
+
+      if (!session?.user) throw new ApolloError('Unauthorized');
+
+      const { user: { id: userId } } = session;
+      const conversations = await prisma.conversation.findMany({
+        where: {
+          participants: {
+            some: {
+              userId: {
+                equals: userId
+              }
+            }
+          }
+        },
+        include: conversationPopulated,
+      });
+
+      return conversations;
+    }
+  },
+
   Mutation: {
     createConversation: async (_: any, args: { participants: Array<string> }, context: GraphQLContext): Promise<{ conversationId: string }> => {
       const { participants: participantIds } = args;
@@ -33,7 +57,7 @@ const resolvers = {
   },
 }
 
-const participantPopulated = Prisma.validator<Prisma.ConversationParticipantInclude>()({
+export const participantPopulated = Prisma.validator<Prisma.ConversationParticipantInclude>()({
   user: {
     select: {
       id: true,
@@ -42,7 +66,7 @@ const participantPopulated = Prisma.validator<Prisma.ConversationParticipantIncl
   }
 });
 
-const conversationPopulated = Prisma.validator<Prisma.ConversationInclude>()({
+export const conversationPopulated = Prisma.validator<Prisma.ConversationInclude>()({
   participants: {
     include: participantPopulated
   },
