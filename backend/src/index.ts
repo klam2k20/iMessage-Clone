@@ -33,16 +33,16 @@ async function startApolloServer() {
     credentials: true,
   }
 
+  /** Resolver Context */
+  const prisma = new PrismaClient();
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
+  const pubsub = new PubSub();
+
   // Creating the WebSocket server
   const wsServer = new WebSocketServer({
     server: httpServer,
     path: '/graphql/subscriptions',
   });
-
-  /** Resolver Context */
-  const prisma = new PrismaClient();
-  const schema = makeExecutableSchema({ typeDefs, resolvers });
-  const pubsub = new PubSub();
 
   // WebSocketServer start listening.
   const serverCleanup = useServer({
