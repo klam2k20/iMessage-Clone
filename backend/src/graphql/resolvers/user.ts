@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { ApolloError } from "apollo-server-core";
+import { GraphQLError } from "graphql";
 import { CreateUsernameResponse, GraphQLContext } from "../../util/types";
 
 const resolvers = {
@@ -7,7 +7,7 @@ const resolvers = {
     searchUsers: async (_: any, args: { username: string }, context: GraphQLContext): Promise<Array<User>> => {
       const { username: searchUsername } = args;
       const { session, prisma } = context;
-      if (!session?.user) throw new ApolloError('Unauthorized');
+      if (!session?.user) throw new GraphQLError('Unauthorized');
 
       try {
         const { user: { username: myUsername } } = session;
@@ -23,7 +23,7 @@ const resolvers = {
         return users;
       } catch (error: any) {
         console.log('searchUser Error', error.message);
-        throw new ApolloError(error.message);
+        throw new GraphQLError(error.message);
       }
     },
   },

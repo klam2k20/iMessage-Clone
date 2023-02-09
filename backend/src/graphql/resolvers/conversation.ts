@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { ApolloError } from "apollo-server-core";
+import { GraphQLError } from "graphql";
 import { withFilter } from "graphql-subscriptions";
 import { ConversationPopulated, GraphQLContext } from "../../util/types";
 
@@ -8,7 +8,7 @@ const resolvers = {
     conversations: async (_: any, __: any, context: GraphQLContext): Promise<Array<ConversationPopulated>> => {
       const { session, prisma } = context;
 
-      if (!session?.user) throw new ApolloError('Unauthorized');
+      if (!session?.user) throw new GraphQLError('Unauthorized');
 
       const { user: { id: userId } } = session;
       const conversations = await prisma.conversation.findMany({
@@ -33,7 +33,7 @@ const resolvers = {
       const { participants: participantIds } = args;
       const { session, prisma, pubsub } = context;
 
-      if (!session?.user) throw new ApolloError('Unauthorized')
+      if (!session?.user) throw new GraphQLError('Unauthorized')
       try {
         const { user: { id: userId } } = session;
         const conversation = await prisma.conversation.create({
@@ -56,7 +56,7 @@ const resolvers = {
         return { conversationId: conversation.id };
       } catch (error: any) {
         console.log('createConversation Error', error.message);
-        throw new ApolloError(error.message);
+        throw new GraphQLError(error.message);
       }
     },
   },
