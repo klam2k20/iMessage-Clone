@@ -37,6 +37,7 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
   };
 
   const router = useRouter();
+  const { conversationId } = router.query;
   const onViewConversation = (conversationId: string) => {
     router.push({ query: { conversationId } });
   };
@@ -46,7 +47,12 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
   }, []);
 
   return (
-    <Box w={{ base: '100%', md: '400px' }} bg="whiteAlpha.50" py={8} px={4}>
+    <Box
+      display={{ base: conversationId ? 'none' : 'flex', md: 'flex' }}
+      w={{ base: '100%', md: '400px' }}
+      bg="whiteAlpha.50"
+      py={8}
+      px={4}>
       <ConversationList
         session={session}
         conversations={conversationData?.conversations || []}
