@@ -27,7 +27,7 @@ const ConversationList: React.FC<IConversationListProps> = ({
 
   return (
     <Box w="100%">
-      <Box bg="blackAlpha.300" py={2} px={4} borderRadius="md" cursor="pointer">
+      <Box bg="blackAlpha.300" py={2} px={4} borderRadius="md" cursor="pointer" mb={4}>
         <Text textAlign="center" color="whiteAlpha.800" fontWeight={500} onClick={onOpen}>
           Find or Start a Conversation
         </Text>
