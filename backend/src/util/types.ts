@@ -43,4 +43,4 @@ export interface CreateUsernameResponse {
  */
 export type ConversationPopulated = Prisma.ConversationGetPayload<{ include: typeof conversationPopulated; }>
 
-export type participantPopulated = Prisma.ConversationParticipantGetPayload<{ include: typeof participantPopulated; }>
+export type ParticipantPopulated = Prisma.ConversationParticipantGetPayload<{ include: typeof participantPopulated; }>

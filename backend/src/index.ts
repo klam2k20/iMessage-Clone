@@ -1,5 +1,8 @@
-import { ApolloServer } from 'apollo-server-express';
-import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import cors from 'cors';
+import { json } from 'body-parser';
 import express from 'express';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { PrismaClient } from '@prisma/client'
@@ -28,10 +31,6 @@ async function startApolloServer() {
 
   const app = express();
   const httpServer = createServer(app);
-  const corsOption = {
-    origin: process.env.CLIENT_ORIGIN,
-    credentials: true,
-  }
 
   /** Resolver Context */
   const prisma = new PrismaClient();
@@ -59,15 +58,6 @@ async function startApolloServer() {
   const server = new ApolloServer({
     schema: schema,
     csrfPrevention: true,
-    cache: 'bounded',
-    context: async ({ req }): Promise<GraphQLContext> => {
-      /**
-       * Create a context that contains the current session
-       * info and the prisma client to interact with the DB
-       */
-      const session = await getSession({ req }) as Session;
-      return { session, prisma, pubsub };
-    },
     plugins: [
       // Proper shutdown for the HTTP server.
       ApolloServerPluginDrainHttpServer({ httpServer }),
@@ -84,10 +74,29 @@ async function startApolloServer() {
       },
     ],
   });
+
+  const corsOption = {
+    origin: process.env.CLIENT_ORIGIN,
+    credentials: true,
+  }
   await server.start();
-  server.applyMiddleware({ app, cors: corsOption });
+  app.use(
+    '/graphql',
+    cors<cors.CorsRequest>(corsOption),
+    json(),
+    expressMiddleware(server, {
+      context: async ({ req }): Promise<GraphQLContext> => {
+        /**
+         * Create a context that contains the current session
+         * info and the prisma client to interact with the DB
+         */
+        const session = await getSession({ req }) as Session;
+        return { session, prisma, pubsub };
+      },
+    }),
+  );
   await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+  console.log('🚀 Server ready at http://localhost:4000/graphql');
 }
 
 startApolloServer().catch(error => console.log(error))
