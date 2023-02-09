@@ -43,5 +43,13 @@ export interface CreateConversationVariables {
 }
 export interface ConversationsResponse {
   conversations: Array<ConversationPopulated>;
+}
+
+export interface ConversationSubscriptionResponse {
+  subscriptionData: {
+    data: {
+      conversationCreated: ConversationPopulated;
+    }
+  }
 
 }
