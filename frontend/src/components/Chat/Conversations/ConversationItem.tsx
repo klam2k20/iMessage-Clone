@@ -1,14 +1,125 @@
 import { ConversationPopulated } from '@/../backend/src/util/types';
-import { Flex } from '@chakra-ui/react';
+import { GoPrimitiveDot } from 'react-icons/go';
+import { MdOutlineModeEditOutline, MdOutlineDeleteOutline } from 'react-icons/md';
+import {
+  Avatar,
+  AvatarGroup,
+  Button,
+  Flex,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Text,
+} from '@chakra-ui/react';
+import { formatAvatars, formatConversationName } from '@/src/util/functions';
+import formatRelative from 'date-fns/formatRelative';
+import enUS from 'date-fns/locale/en-US';
+import { useState } from 'react';
+
+/**
+ * Format Relative will return a token describing the date
+ * in words relative to the given base date such as
+ * yesterday, today, and other. The formatRelative
+ * in locale will take the returned token
+ * and use it to determine the format of the date
+ */
+const formatRelativeLocale = {
+  lastWeek: 'eeee',
+  yesterday: "'Yesterday",
+  today: 'p',
+  other: 'MM/dd/yy',
+};
 
 interface IConversationItemProps {
+  userId: string;
   conversation: ConversationPopulated;
+  onClick: () => void;
+  isSelected: boolean;
+  // hasSeenLatestMessage: boolean;
 }
 
-const ConversationItem: React.FC<IConversationItemProps> = ({ conversation }) => {
+const ConversationItem: React.FC<IConversationItemProps> = ({
+  userId,
+  conversation,
+  onClick,
+  isSelected,
+  // hasSeenLatestMessage,
+}) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const formatAvatar = formatAvatars(userId, conversation.participants);
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (e.type === 'click') onClick();
+    else if (e.type === 'contextmenu') {
+      e.preventDefault();
+      setMenuOpen(true);
+    }
+  };
+
   return (
-    <Flex py={2} px={4} borderRadius="md" _hover={{ bg: 'whiteAlpha.200' }}>
-      {conversation.id}
+    <Flex
+      align="center"
+      justify="center"
+      p={2}
+      borderRadius="md"
+      bg={isSelected ? 'whiteAlpha.200' : 'none'}
+      _hover={{ bg: 'whiteAlpha.200' }}
+      gap={2}
+      onClick={e => handleClick(e)}
+      onContextMenu={e => handleClick(e)}
+      position="relative">
+      <Menu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
+        <MenuList bg="#2d2d2d">
+          <MenuItem
+            bg="#2d2d2d"
+            _hover={{ bg: 'whiteAlpha.300' }}
+            icon={<MdOutlineModeEditOutline fontSize={16} />}>
+            Edit
+          </MenuItem>
+          <MenuItem
+            bg="#2d2d2d"
+            _hover={{ bg: 'whiteAlpha.300' }}
+            icon={<MdOutlineDeleteOutline fontSize={16} />}>
+            Delete
+          </MenuItem>
+        </MenuList>
+      </Menu>
+      {/* {true && <GoPrimitiveDot fontSize={16} color="#1982FC" />} */}
+      <Flex flex={1} justify="center">
+        {conversation.participants.length == 2 ? (
+          <Avatar src="" name={formatAvatar[0]} />
+        ) : (
+          <AvatarGroup size="sm">
+            <Avatar src="" name={formatAvatar[0]} />
+            <Avatar src="" name={formatAvatar[1]} />
+          </AvatarGroup>
+        )}
+      </Flex>
+      <Flex flex={4} flexDirection="column" w="80%">
+        <Flex justify="space-between" gap={1}>
+          <Text flex={3} fontWeight={600} isTruncated>
+            {formatConversationName(userId, conversation.participants)}
+          </Text>
+          <Text
+            flex={2}
+            whiteSpace="nowrap"
+            overflowX="hidden"
+            color="whiteAlpha.700"
+            textAlign="right">
+            {formatRelative(new Date(conversation.updatedAt), new Date(), {
+              locale: {
+                ...enUS,
+                formatRelative: token =>
+                  formatRelativeLocale[token as keyof typeof formatRelativeLocale],
+              },
+            })}
+          </Text>
+        </Flex>
+        <Text color="whiteAlpha.700" isTruncated>
+          Latest Message
+        </Text>
+      </Flex>
     </Flex>
   );
 };

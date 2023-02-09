@@ -5,6 +5,7 @@ import ConversationList from './ConversationList';
 import conversationOperations from '../../../graphql/operations/conversation';
 import { ConversationsResponse, ConversationSubscriptionResponse } from '@/src/util/types';
 import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 interface IConversationWrapperProps {
   session: Session;
@@ -35,13 +36,22 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
     });
   };
 
+  const router = useRouter();
+  const onViewConversation = (conversationId: string) => {
+    router.push({ query: { conversationId } });
+  };
+
   useEffect(() => {
     subscribeToNewConversation();
   }, []);
 
   return (
     <Box w={{ base: '100%', md: '400px' }} bg="whiteAlpha.50" py={8} px={4}>
-      <ConversationList session={session} conversations={conversationData?.conversations || []} />
+      <ConversationList
+        session={session}
+        conversations={conversationData?.conversations || []}
+        onViewConversation={onViewConversation}
+      />
     </Box>
   );
 };
