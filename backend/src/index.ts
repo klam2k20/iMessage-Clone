@@ -48,8 +48,8 @@ async function startApolloServer() {
   const serverCleanup = useServer({
     schema,
     context: async (cxt: SubscriptionContext): Promise<GraphQLContext> => {
-      if (cxt.connectParams && cxt.connectParams.session) {
-        const { session } = cxt.connectParams;
+      if (cxt.connectionParams && cxt.connectionParams.session) {
+        const { session } = cxt.connectionParams;
         return { session, prisma, pubsub };
       }
       return { session: null, prisma, pubsub };

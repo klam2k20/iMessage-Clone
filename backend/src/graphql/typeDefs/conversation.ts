@@ -31,6 +31,10 @@ const typeDefs = gql`
   type Mutation {
     createConversation(participants: [String]): CreateConversationResponse
   }
+
+  type Subscription {
+    conversationCreated: Conversation
+  }
 `
 
 export default typeDefs;

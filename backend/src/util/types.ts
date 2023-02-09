@@ -16,7 +16,7 @@ export interface Session {
 }
 
 export interface SubscriptionContext extends Context {
-  connectParams: {
+  connectionParams: {
     session?: Session
   }
 }
