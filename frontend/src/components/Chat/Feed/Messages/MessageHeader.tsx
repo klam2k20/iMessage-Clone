@@ -19,7 +19,6 @@ const MessageHeader: React.FC<IMessageHeaderProps> = ({ userId, conversationId }
   const conversation = data?.conversations.find(
     c => c.id === conversationId
   ) as ConversationPopulated;
-  const formatAvatar = formatAvatars(userId, conversation.participants);
   const router = useRouter();
 
   return (
@@ -39,10 +38,10 @@ const MessageHeader: React.FC<IMessageHeaderProps> = ({ userId, conversationId }
 
       <Flex flexDirection="column" h="100%" w="100%" align="center">
         {conversation.participants.length == 2 ? (
-          <Avatar src="" name={formatAvatar[0]} />
+          <Avatar src="" name={formatAvatars(userId, conversation.participants)[0]} />
         ) : (
           <AvatarGroup size="md" max={2}>
-            {formatAvatar.map(username => (
+            {formatAvatars(userId, conversation.participants).map(username => (
               <Avatar key={username} src="" name={username} />
             ))}
           </AvatarGroup>

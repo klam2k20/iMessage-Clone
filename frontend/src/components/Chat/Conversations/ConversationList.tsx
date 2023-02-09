@@ -19,7 +19,6 @@ const ConversationList: React.FC<IConversationListProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const onOpen = () => setIsOpen(true);
-  const onClose = () => setIsOpen(false);
   const {
     user: { id: userId },
   } = session;
@@ -32,7 +31,7 @@ const ConversationList: React.FC<IConversationListProps> = ({
           Find or Start a Conversation
         </Text>
       </Box>
-      <ConversationModal session={session} isOpen={isOpen} onClose={onClose} />
+      <ConversationModal session={session} isOpen={isOpen} setIsOpen={setIsOpen} />
       {conversations.map(c => (
         <ConversationItem
           key={c.id}

@@ -29,10 +29,10 @@ import SearchedUserList from './SearchedUserList';
 interface IConversationModalProps {
   session: Session;
   isOpen: boolean;
-  onClose: () => void;
+  setIsOpen: (state: boolean) => void;
 }
 
-const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen, onClose }) => {
+const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen, setIsOpen }) => {
   const [username, setUsername] = useState('');
   const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
   let [searchUser, { data, loading, error }] = useLazyQuery<
@@ -47,6 +47,15 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen,
   const {
     user: { id: userId },
   } = session;
+
+  /**
+   * Clear conversation modal
+   */
+  const onClose = () => {
+    setIsOpen(false);
+    setUsername('');
+    setParticipants([]);
+  };
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -68,11 +77,6 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen,
         } = conversation;
         router.push({ query: { conversationId } });
 
-        /**
-         * Clear conversation modal
-         */
-        setUsername('');
-        setParticipants([]);
         onClose();
       } catch (error: any) {
         console.log('onCreateConversation Error', error.message);
