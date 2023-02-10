@@ -15,16 +15,16 @@ scalar Date
 
   # Query all messages for the specified conversation
   type Query {
-    messages(conversationId: string): [Message]
+    messages(conversationId: String): [Message]
   }, 
 
   type Mutation {
-    sendMessage(id: String, senderId: String, conversationId: String, body: String)
+    sendMessage(id: String, senderId: String, conversationId: String, body: String): Boolean
   },
 
   # Subscribe to the following conversation to get updated messages
   type Subscription {
-    messageSent(conversationId: String)
+    messageSent(conversationId: String): Message
   },
 `
 
