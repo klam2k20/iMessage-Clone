@@ -6,7 +6,7 @@ scalar Date
   type Message {
     id: String
     sender: User
-    conversation: Conversation
+    # conversation: Conversation
     body: String
     # isLatestIn: Conversation
     createdAt: Date
