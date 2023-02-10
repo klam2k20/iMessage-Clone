@@ -1,5 +1,4 @@
 import { Prisma } from "@prisma/client";
-import { equal } from "assert";
 import { GraphQLError } from "graphql";
 import { withFilter } from "graphql-subscriptions";
 import { isUserInConversation } from "../../util/functions";
@@ -52,7 +51,7 @@ const resolvers = {
   },
 
   Mutation: {
-    sendMessage: async (_: any, args: { id: string, senderId: string, conversationId: string, body: string }, context: GraphQLContext) => {
+    sendMessage: async (_: any, args: { id: string, senderId: string, conversationId: string, body: string }, context: GraphQLContext): Promise<boolean> => {
       const { session, prisma, pubsub } = context;
       const { id, senderId, conversationId, body } = args;
 
@@ -134,7 +133,7 @@ const resolvers = {
         });
 
         return true;
-      } catch (error) {
+      } catch (error: any) {
         console.log('sendMessage Error', error.message);
         throw new GraphQLError(error.message);
       }
@@ -144,11 +143,16 @@ const resolvers = {
   // Add filter to only send updates to people subscribed to this conversation
   Subscription: {
     messageSent: {
-      subscribe:
+      subscribe: withFilter(
         (_: any, args: { conversationId: string }, context: GraphQLContext) => {
           const { pubsub } = context;
           return pubsub.asyncIterator('MESSAGE_SENT');
+        },
+        (payload: { messageSent: MessagePopulated }, args: { conversationId: string }) => {
+          return payload.messageSent.conversationId === args.conversationId;
         }
+      )
+
     },
   },
 }
@@ -160,4 +164,6 @@ export const messagePopulated = Prisma.validator<Prisma.MessageInclude>()({
       username: true,
     }
   }
-})
+});
+
+export default resolvers;
