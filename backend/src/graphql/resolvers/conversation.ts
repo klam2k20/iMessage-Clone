@@ -50,6 +50,11 @@ const resolvers = {
           include: conversationPopulated,
         });
 
+        /**
+         * Publish CONVERSATION_CREATED event 
+         * and pass the payload to the associated
+         * subscription
+         */
         pubsub.publish('CONVERSATION_CREATED', {
           conversationCreated: conversation,
         });
@@ -63,6 +68,10 @@ const resolvers = {
 
   Subscription: {
     conversationCreated: {
+      /**
+       * Listen on the CONVERSATION_CREATED event and send it to 
+       * a client if it passes the filter function
+       */
       subscribe: withFilter(
         (_: any, __: any, context: GraphQLContext) => {
           const { pubsub } = context;
