@@ -15,25 +15,25 @@ const resolvers = {
       if (!session?.user) throw new GraphQLError('Unauthorized');
       const { user: { id: userId } } = session;
 
-      const conversation = await prisma.conversation.findUnique({
-        where: {
-          id: conversationId,
-        },
-        include: conversationPopulated
-      });
-
-      /**
-       * Check that the conversation exists and the logged
-       * in session user is part of the conversation
-       */
-      if (!conversation) throw new GraphQLError(`Conversation ${conversationId} is Non-Existent`);
-      const isUserInConvo = isUserInConversation(userId, conversation.participants);
-      if (!isUserInConvo) throw new GraphQLError('Unauthorized');
-
       /**
        * Find all messages that belong to the specified conversation
        */
       try {
+        const conversation = await prisma.conversation.findUnique({
+          where: {
+            id: conversationId,
+          },
+          include: conversationPopulated
+        });
+
+        /**
+         * Check that the conversation exists and the logged
+         * in session user is part of the conversation
+         */
+        if (!conversation) throw new GraphQLError(`Conversation ${conversationId} is Non-Existent`);
+        const isUserInConvo = isUserInConversation(userId, conversation.participants);
+        if (!isUserInConvo) throw new GraphQLError('Unauthorized');
+
         const messages = await prisma.message.findMany({
           where: {
             conversationId: conversationId
@@ -52,7 +52,88 @@ const resolvers = {
   },
 
   Mutation: {
-    sendMessage: async (_: any, args: { conversationId: string }, context: GraphQLContext) => { },
+    sendMessage: async (_: any, args: { id: string, senderId: string, conversationId: string, body: string }, context: GraphQLContext) => {
+      const { session, prisma, pubsub } = context;
+      const { id, senderId, conversationId, body } = args;
+
+      if (!session?.user || session.user.id !== senderId) throw new GraphQLError("Unauthorized");
+
+      const { user: { id: userId } } = session;
+
+      try {
+        /**
+       * Create message
+       */
+        const newMessage = await prisma.message.create({
+          data: {
+            id,
+            senderId,
+            conversationId,
+            body,
+          },
+          include: messagePopulated
+        });
+
+        let conversation = await prisma.conversation.findUnique({
+          where: {
+            id: conversationId
+          },
+          include: conversationPopulated
+        });
+
+        /**
+         * Check that the conversation exists and the logged
+         * in session user is part of the conversation
+         */
+        if (!conversation) throw new GraphQLError(`Conversation ${conversationId} is Non-Existent`);
+        const isUserInConvo = isUserInConversation(userId, conversation.participants);
+        if (!isUserInConvo) throw new GraphQLError('Unauthorized');
+
+        /**
+         * Update conversation's latest message and conversation's participants'
+         * hasSeenLatestMessage
+         */
+        conversation = await prisma.conversation.update({
+          where: {
+            id: conversationId
+          },
+          data: {
+            latestMessageId: newMessage.id,
+            participants: {
+              /**
+               * Should this not be userId: senderId? I think update
+               * only updates one item so the condition has to be on
+               * a unique property and only id is unique on conversation
+               * participants
+               */
+              update: {
+                where: {
+                  id: senderId,
+                },
+                data: {
+                  hasSeenLatestMessage: true,
+                }
+              },
+              updateMany: {
+                where: {
+                  NOT: {
+                    userId: senderId
+                  }
+                },
+                data: {
+                  hasSeenLatestMessage: false,
+                }
+              }
+            }
+          },
+          include: conversationPopulated,
+        });
+        return true;
+      } catch (error) {
+        console.log('sendMessage Error', error.message);
+        throw new GraphQLError(error.message);
+      }
+    },
   },
 
   // Add filter to only send updates to people subscribed to this conversation
