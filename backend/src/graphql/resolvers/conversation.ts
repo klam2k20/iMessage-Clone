@@ -79,6 +79,10 @@ const resolvers = {
         },
         (payload: { conversationCreated: ConversationPopulated }, _, context: GraphQLContext) => {
           const { session } = context;
+          /**
+           * If the logged in user isn't in the newly created conversation don't notify the user 
+           * of the event. The session.user.id is different for every logged in user
+           */
           const isInConversation = !!payload.conversationCreated.participants.find((p) => {
             return p.userId === session?.user?.id
           });
