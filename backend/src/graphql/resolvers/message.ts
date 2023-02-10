@@ -128,6 +128,11 @@ const resolvers = {
           },
           include: conversationPopulated,
         });
+
+        pubsub.publish('MESSAGE_SENT', {
+          messageSent: newMessage
+        });
+
         return true;
       } catch (error) {
         console.log('sendMessage Error', error.message);
