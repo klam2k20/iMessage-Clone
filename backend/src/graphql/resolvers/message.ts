@@ -89,6 +89,24 @@ const resolvers = {
         if (!isUserInConvo) throw new GraphQLError('Unauthorized');
 
         /**
+         * Find conversation participant with the conversation id and sender id
+         * should only be one and should never be null since the conversation
+         * exist and the logged in session user is part of the conversation 
+         * at this point
+         */
+        const participant = await prisma.conversationParticipant.findFirst({
+          where: {
+            userId: userId,
+            conversationId: conversationId
+          }
+        });
+
+        /**
+         * Should never be the case
+         */
+        if (!participant) throw new GraphQLError("Participant Non-Existent")
+
+        /**
          * Update conversation's latest message and conversation's participants'
          * hasSeenLatestMessage
          */
@@ -100,14 +118,13 @@ const resolvers = {
             latestMessageId: newMessage.id,
             participants: {
               /**
-               * Should this not be userId: senderId? I think update
-               * only updates one item so the condition has to be on
+               * Update only updates one item so the condition has to be on
                * a unique property and only id is unique on conversation
                * participants
                */
               update: {
                 where: {
-                  id: senderId,
+                  id: participant.id,
                 },
                 data: {
                   hasSeenLatestMessage: true,
