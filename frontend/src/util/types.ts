@@ -1,5 +1,5 @@
 import {
-  ConversationPopulated,
+  ConversationPopulated, MessagePopulated,
 } from "../../../backend/src/util/types";
 
 /**
@@ -41,6 +41,7 @@ export interface CreateConversationResponse {
 export interface CreateConversationVariables {
   participants: Array<string>;
 }
+
 export interface ConversationsResponse {
   conversations: Array<ConversationPopulated>;
 }
@@ -51,5 +52,23 @@ export interface ConversationSubscriptionResponse {
       conversationCreated: ConversationPopulated;
     }
   }
+}
 
+/**
+ * Message Interfaces
+ */
+export interface MessagesResponse {
+  messages: Array<MessagePopulated>;
+}
+
+export interface MessagesVariables {
+  conversationId: string;
+}
+
+export interface MessageSubscriptionResponse {
+  subscriptionData: {
+    data: {
+      messageSent: MessagePopulated;
+    }
+  }
 }
