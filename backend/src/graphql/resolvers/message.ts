@@ -144,7 +144,7 @@ const resolvers = {
   Subscription: {
     messageSent: {
       subscribe: withFilter(
-        (_: any, args: { conversationId: string }, context: GraphQLContext) => {
+        (_: any, __: any, context: GraphQLContext) => {
           const { pubsub } = context;
           return pubsub.asyncIterator('MESSAGE_SENT');
         },
