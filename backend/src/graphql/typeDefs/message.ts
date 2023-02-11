@@ -19,7 +19,7 @@ scalar Date
   }, 
 
   type Mutation {
-    sendMessage(id: String, senderId: String, conversationId: String, body: String): Boolean
+    sendMessage(senderId: String, conversationId: String, body: String): Boolean
   },
 
   # Subscribe to the following conversation to get updated messages

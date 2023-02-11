@@ -49,4 +49,14 @@ export type ParticipantPopulated = Prisma.ConversationParticipantGetPayload<{ in
 /**
  * Message
  */
-export type MessagePopulated = Prisma.MessageGetPayload<{ include: typeof messagePopulated }>;
+export type MessagePopulated = Prisma.MessageGetPayload<{ include: typeof messagePopulated }>
+
+export type SendMessageResponse = {
+  sendMessage: boolean;
+}
+
+export type SendMessageVariables = {
+  senderId: string;
+  conversationId: string;
+  body: string;
+}

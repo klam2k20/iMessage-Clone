@@ -29,7 +29,7 @@ const resolvers = {
          * Check that the conversation exists and the logged
          * in session user is part of the conversation
          */
-        if (!conversation) throw new GraphQLError(`Conversation ${conversationId} is Non-Existent`);
+        if (!conversation) throw new GraphQLError('Conversation Non-Existent');
         const isUserInConvo = isUserInConversation(userId, conversation.participants);
         if (!isUserInConvo) throw new GraphQLError('Unauthorized');
 
@@ -51,9 +51,9 @@ const resolvers = {
   },
 
   Mutation: {
-    sendMessage: async (_: any, args: { id: string, senderId: string, conversationId: string, body: string }, context: GraphQLContext): Promise<boolean> => {
+    sendMessage: async (_: any, args: { senderId: string, conversationId: string, body: string }, context: GraphQLContext): Promise<boolean> => {
       const { session, prisma, pubsub } = context;
-      const { id, senderId, conversationId, body } = args;
+      const { senderId, conversationId, body } = args;
 
       if (!session?.user || session.user.id !== senderId) throw new GraphQLError("Unauthorized");
 
@@ -65,7 +65,6 @@ const resolvers = {
        */
         const newMessage = await prisma.message.create({
           data: {
-            id,
             senderId,
             conversationId,
             body,
