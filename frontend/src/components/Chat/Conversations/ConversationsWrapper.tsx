@@ -26,7 +26,6 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
     subscribeToMore({
       document: conversationOperations.Subscriptions.conversationCreated,
       updateQuery: (prev, { subscriptionData }: ConversationSubscriptionResponse) => {
-        console.log('subscribe to new convo frontend');
         if (!subscriptionData.data) return prev;
         const newConversation = subscriptionData.data.conversationCreated;
         return Object.assign({}, prev, {
