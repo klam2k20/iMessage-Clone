@@ -51,9 +51,9 @@ const resolvers = {
   },
 
   Mutation: {
-    sendMessage: async (_: any, args: { senderId: string, conversationId: string, body: string }, context: GraphQLContext): Promise<boolean> => {
+    sendMessage: async (_: any, args: { id: string, senderId: string, conversationId: string, body: string }, context: GraphQLContext): Promise<boolean> => {
       const { session, prisma, pubsub } = context;
-      const { senderId, conversationId, body } = args;
+      const { id, senderId, conversationId, body } = args;
 
       if (!session?.user || session.user.id !== senderId) throw new GraphQLError("Unauthorized");
 
@@ -65,6 +65,7 @@ const resolvers = {
        */
         const newMessage = await prisma.message.create({
           data: {
+            id,
             senderId,
             conversationId,
             body,

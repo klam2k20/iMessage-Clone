@@ -72,3 +72,14 @@ export interface MessageSubscriptionResponse {
     }
   }
 }
+
+export type SendMessageResponse = {
+  sendMessage: boolean;
+}
+
+export type SendMessageVariables = {
+  id: string
+  senderId: string;
+  conversationId: string;
+  body: string;
+}

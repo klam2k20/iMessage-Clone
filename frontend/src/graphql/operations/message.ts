@@ -22,8 +22,8 @@ const messageOperations = {
   },
   Mutations: {
     sendMessage: gql`
-      mutation sendMessage($senderId: String!, $conversationId: String!, $body: String!) {
-        sendMessage(senderId: $senderId, conversationId: $conversationId, body: $body)
+      mutation sendMessage($id: String!, $senderId: String!, $conversationId: String!, $body: String!) {
+        sendMessage(id: $id, senderId: $senderId, conversationId: $conversationId, body: $body)
       }
     `,
   },

@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useMutation } from '@apollo/client';
 import messageOperations from '@/src/graphql/operations/message';
-import { SendMessageResponse, SendMessageVariables } from '@/../backend/src/util/types';
+import { SendMessageResponse, SendMessageVariables } from '../../../../util/types';
+import ObjectID from 'bson-objectid';
 interface IMessageInputProps {
   session: Session;
   conversationId: string;
@@ -22,8 +23,9 @@ const MessageInput: React.FC<IMessageInputProps> = ({ session, conversationId })
       const {
         user: { id: senderId },
       } = session;
+      const id = new ObjectID().toString();
       const { data, errors } = await sendMessage({
-        variables: { senderId, conversationId, body: message },
+        variables: { id, senderId, conversationId, body: message },
       });
       setMessage('');
 
