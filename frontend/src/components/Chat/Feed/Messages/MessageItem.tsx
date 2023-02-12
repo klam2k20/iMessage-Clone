@@ -35,7 +35,7 @@ const MessageItem: React.FC<IMessageItemProps> = ({
   return (
     <Stack w="100%" spacing={0}>
       {hasDateTime && (
-        <Text textAlign="center" fontSize={14} color="whiteAlpha.700" mb="0.5rem">
+        <Text textAlign="center" fontSize={14} color="whiteAlpha.700" my="0.5rem">
           {formatRelative(new Date(message.createdAt), new Date(), {
             locale: {
               ...enUS,
@@ -68,7 +68,7 @@ const MessageItem: React.FC<IMessageItemProps> = ({
           fontWeight={500}
           bg={sentByMe ? 'brand.100' : 'whiteAlpha.300'}
           wordBreak="break-word"
-          maxW="55%"
+          maxW="65%"
           borderRadius="md">
           {message.body}
         </Text>
