@@ -116,9 +116,11 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
             })}
           </Text>
         </Flex>
-        <Text color="whiteAlpha.700" isTruncated>
-          {conversation.latestMessage.body}
-        </Text>
+        {conversation.latestMessage && (
+          <Text color="whiteAlpha.700" isTruncated>
+            {conversation.latestMessage.body}
+          </Text>
+        )}
       </Flex>
     </Flex>
   );
