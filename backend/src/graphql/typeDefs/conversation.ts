@@ -32,6 +32,10 @@ const typeDefs = gql`
     createConversation(participants: [String]): CreateConversationResponse
   }
 
+  type Mutation {
+    markConversationAsRead(userId: String, conversationId: String): Boolean
+  }
+
   type Subscription {
     conversationCreated: Conversation
   }

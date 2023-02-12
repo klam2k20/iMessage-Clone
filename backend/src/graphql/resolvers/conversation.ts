@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { GraphQLError } from "graphql";
+import { GraphQLError, GraphQLString } from "graphql";
 import { withFilter } from "graphql-subscriptions";
 import { ConversationPopulated, GraphQLContext } from "../../util/types";
 
@@ -63,6 +63,45 @@ const resolvers = {
         console.log('createConversation Error', error.message);
         throw new GraphQLError(error.message);
       }
+    },
+
+    markConversationAsRead: async (_: any, args: { userId: string, conversationId: string }, context: GraphQLContext) => {
+      const { session, prisma } = context;
+      const { userId, conversationId } = args;
+
+      if (!session?.user) throw new GraphQLError('Unauthorized');
+
+      try {
+        /**
+         * Find conversation participant to use the participant id in the update
+         */
+        const participant = await prisma.conversationParticipant.findFirst({
+          where: {
+            userId,
+            conversationId
+          }
+        });
+
+        /**
+         * Should never be the case
+         */
+        if (!participant) throw new GraphQLError("Participant Non-Existent");
+
+        await prisma.conversationParticipant.update({
+          where: {
+            id: participant.id
+          },
+          data: {
+            hasSeenLatestMessage: true
+          }
+        });
+        return true;
+      } catch (error: any) {
+        console.log('markConversationAsRead Error', error.message);
+        throw new GraphQLError(error.message);
+      }
+
+
     },
   },
 
