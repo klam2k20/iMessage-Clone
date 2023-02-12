@@ -54,6 +54,15 @@ export interface ConversationSubscriptionResponse {
   }
 }
 
+export interface MarkConversationAsReadResponse {
+  markConversationAsRead: boolean;
+}
+
+export interface MarkConversationAsReadVariables {
+  userId: string;
+  conversationId: string;
+}
+
 /**
  * Message Interfaces
  */

@@ -36,7 +36,7 @@ interface IConversationItemProps {
   conversation: ConversationPopulated;
   onClick: () => void;
   isSelected: boolean;
-  // hasSeenLatestMessage: boolean;
+  hasSeenLatestMessage: boolean;
 }
 
 const ConversationItem: React.FC<IConversationItemProps> = ({
@@ -44,7 +44,7 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
   conversation,
   onClick,
   isSelected,
-  // hasSeenLatestMessage,
+  hasSeenLatestMessage,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const formatAvatar = formatAvatars(userId, conversation.participants);
@@ -85,7 +85,7 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
           </MenuItem>
         </MenuList>
       </Menu>
-      {/* {true && <GoPrimitiveDot fontSize={16} color="#1982FC" />} */}
+      {hasSeenLatestMessage === false && <GoPrimitiveDot fontSize={16} color="#1982FC" />}
       <Flex flex={1} justify="center">
         {conversation.participants.length == 2 ? (
           <Avatar src="" name={formatAvatar[0]} />

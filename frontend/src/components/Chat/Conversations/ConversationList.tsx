@@ -1,4 +1,4 @@
-import { ConversationPopulated } from '@/../backend/src/util/types';
+import { ConversationPopulated, ParticipantPopulated } from '@/../backend/src/util/types';
 import { Box, Text } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import { useRouter } from 'next/router';
@@ -10,7 +10,7 @@ import ConversationModal from './Modal/ConversationModal';
 interface IConversationListProps {
   session: Session;
   conversations: Array<ConversationPopulated>;
-  onViewConversation: (conversationId: string) => void;
+  onViewConversation: (conversationId: string, hasSeenLatestMessage: boolean) => void;
   loading: boolean;
 }
 
@@ -36,15 +36,20 @@ const ConversationList: React.FC<IConversationListProps> = ({
       </Box>
       <ConversationModal session={session} isOpen={isOpen} setIsOpen={setIsOpen} />
       {loading && <ConversationsSkeleton />}
-      {conversations.map(c => (
-        <ConversationItem
-          key={c.id}
-          userId={userId}
-          conversation={c}
-          onClick={() => onViewConversation(c.id)}
-          isSelected={router.query.conversationId === c.id}
-        />
-      ))}
+      {conversations.map(c => {
+        const participant = c.participants.find((p: ParticipantPopulated) => p.user.id === userId);
+        console.log('PARTICIPANTS', participant);
+        return (
+          <ConversationItem
+            key={c.id}
+            userId={userId}
+            conversation={c}
+            onClick={() => onViewConversation(c.id, c.hasSeenLatestMessage)}
+            isSelected={router.query.conversationId === c.id}
+            hasSeenLatestMessage={participant.hasSeenLatestMessage}
+          />
+        );
+      })}
     </Box>
   );
 };

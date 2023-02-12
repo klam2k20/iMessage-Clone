@@ -1,21 +1,25 @@
-import { useQuery } from '@apollo/client';
+import { gql, useMutation, useQuery } from '@apollo/client';
 import { Box } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import ConversationList from './ConversationList';
 import conversationOperations from '../../../graphql/operations/conversation';
-import { ConversationsResponse, ConversationSubscriptionResponse } from '@/src/util/types';
-import { useEffect } from 'react';
+import {
+  ConversationsResponse,
+  ConversationSubscriptionResponse,
+  MarkConversationAsReadResponse,
+  MarkConversationAsReadVariables,
+} from '@/src/util/types';
+import { cache, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { ConversationsSkeleton } from '../../Common/SkeletonLoader';
+import { toast } from 'react-hot-toast';
+import { ParticipantPopulated } from '@/../backend/src/util/types';
 
 interface IConversationWrapperProps {
   session: Session;
 }
 
 const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) => {
-  /**
-   * Add useQuery type
-   */
   const {
     data: conversationData,
     loading,
@@ -36,10 +40,83 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
     });
   };
 
+  const [
+    markConversationAsRead,
+    { data, loading: markConversationAsReadLoading, error: markConversationAsReadError },
+  ] = useMutation<MarkConversationAsReadResponse, MarkConversationAsReadVariables>(
+    conversationOperations.Mutations.markConversationAsRead
+  );
+
   const router = useRouter();
+  const {
+    user: { id: userId },
+  } = session;
   const { conversationId } = router.query;
-  const onViewConversation = (conversationId: string) => {
+  const onViewConversation = async (conversationId: string, hasSeenLatestMessage: boolean) => {
     router.push({ query: { conversationId } });
+
+    /**
+     * Mark conversation as read
+     */
+    if (!hasSeenLatestMessage)
+      try {
+        await markConversationAsRead({
+          variables: { userId, conversationId },
+          optimisticResponse: { markConversationAsRead: true },
+          update: cache => {
+            /**
+             * Find the participant fragment on this specific conversation
+             */
+            const participantFragment = cache.readFragment<{
+              participants: Array<ParticipantPopulated>;
+            }>({
+              id: `Conversation:${conversationId}`,
+              fragment: gql`
+                fragment Participants on Conversation {
+                  participants {
+                    user {
+                      id
+                      username
+                    }
+                    hasSeenLatestMessage
+                  }
+                }
+              `,
+            });
+
+            /**
+             * Update the user specific participant's hasSeenLatestMessage
+             * while keeping the remaining participants unchanged
+             */
+            if (!participantFragment) return;
+            const participants = [...participantFragment.participants];
+            const i = participants.findIndex(p => p.user.id === userId);
+            if (i === -1) return;
+            participants[i] = {
+              ...participants[i],
+              hasSeenLatestMessage: true,
+            };
+
+            /**
+             * Update cache
+             */
+            cache.writeFragment({
+              id: `Conversation:${conversationId}`,
+              fragment: gql`
+                fragment Participants on Conversation {
+                  participants
+                }
+              `,
+              data: {
+                participants,
+              },
+            });
+          },
+        });
+      } catch (error: any) {
+        console.log('onViewConversation Error', error.message);
+        toast.error(error.message);
+      }
   };
 
   useEffect(() => {
