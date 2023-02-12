@@ -3,6 +3,7 @@ import { Box, Text } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { ConversationsSkeleton } from '../../Common/SkeletonLoader';
 import ConversationItem from './ConversationItem';
 import ConversationModal from './Modal/ConversationModal';
 
@@ -10,12 +11,14 @@ interface IConversationListProps {
   session: Session;
   conversations: Array<ConversationPopulated>;
   onViewConversation: (conversationId: string) => void;
+  loading: boolean;
 }
 
 const ConversationList: React.FC<IConversationListProps> = ({
   session,
   conversations,
   onViewConversation,
+  loading,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const onOpen = () => setIsOpen(true);
@@ -32,6 +35,7 @@ const ConversationList: React.FC<IConversationListProps> = ({
         </Text>
       </Box>
       <ConversationModal session={session} isOpen={isOpen} setIsOpen={setIsOpen} />
+      {loading && <ConversationsSkeleton />}
       {conversations.map(c => (
         <ConversationItem
           key={c.id}

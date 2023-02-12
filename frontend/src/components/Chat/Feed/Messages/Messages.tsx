@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import MessageItem from './MessageItem';
 import differenceInHours from 'date-fns/differenceInHours';
+import { MessagesSkeleton } from '@/src/components/Common/SkeletonLoader';
 
 interface IMessagesProps {
   userId: string;
@@ -48,9 +49,6 @@ const Messages: React.FC<IMessagesProps> = ({ userId, conversationId }) => {
   }, [conversationId]);
 
   return (
-    /**
-     * Add css to hide scrollbar
-     */
     <Flex
       flexDirection="column-reverse"
       overflowY="scroll"
@@ -62,6 +60,7 @@ const Messages: React.FC<IMessagesProps> = ({ userId, conversationId }) => {
       h="100%"
       px={4}
       gap={1}>
+      {loading && <MessagesSkeleton />}
       {data?.messages &&
         data.messages.map((m, i) => (
           <MessageItem

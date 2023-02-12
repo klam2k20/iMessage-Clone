@@ -6,6 +6,7 @@ import conversationOperations from '../../../graphql/operations/conversation';
 import { ConversationsResponse, ConversationSubscriptionResponse } from '@/src/util/types';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { ConversationsSkeleton } from '../../Common/SkeletonLoader';
 
 interface IConversationWrapperProps {
   session: Session;
@@ -56,6 +57,7 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
         session={session}
         conversations={conversationData?.conversations || []}
         onViewConversation={onViewConversation}
+        loading={loading}
       />
     </Box>
   );
