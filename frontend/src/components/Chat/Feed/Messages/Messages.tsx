@@ -4,6 +4,8 @@ import { useQuery } from '@apollo/client';
 import { Flex } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
+import MessageItem from './MessageItem';
+import differenceInHours from 'date-fns/differenceInHours';
 
 interface IMessagesProps {
   userId: string;
@@ -49,8 +51,34 @@ const Messages: React.FC<IMessagesProps> = ({ userId, conversationId }) => {
     /**
      * Add css to hide scrollbar
      */
-    <Flex flexDirection="column-reverse" overflowY="scroll" h="100%">
-      {data?.messages && data.messages.map(m => <div key={m.id}>{m.body}</div>)}
+    <Flex
+      flexDirection="column-reverse"
+      overflowY="scroll"
+      sx={{
+        '::-webkit-scrollbar': {
+          display: 'none',
+        },
+      }}
+      h="100%"
+      px={4}
+      gap={1}>
+      {data?.messages &&
+        data.messages.map((m, i) => (
+          <MessageItem
+            key={m.id}
+            message={m}
+            sentByMe={m.sender.id === userId}
+            hasAvatar={i === 0 || m.sender.id !== data.messages[i - 1].sender.id}
+            hasUsername={
+              i === data.messages.length - 1 || m.sender.id !== data.messages[i + 1].sender.id
+            }
+            hasDateTime={
+              i === data.messages.length - 1 ||
+              differenceInHours(new Date(m.createdAt), new Date(data.messages[i + 1].createdAt)) >=
+                1
+            }
+          />
+        ))}
     </Flex>
   );
 };
