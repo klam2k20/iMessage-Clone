@@ -1,10 +1,14 @@
 import { Box, Input } from '@chakra-ui/react';
 import { Session } from 'next-auth';
-import React, { useState } from 'react';
+import React, { cache, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useMutation } from '@apollo/client';
 import messageOperations from '@/src/graphql/operations/message';
-import { SendMessageResponse, SendMessageVariables } from '../../../../util/types';
+import {
+  MessagesResponse,
+  SendMessageResponse,
+  SendMessageVariables,
+} from '../../../../util/types';
 import ObjectID from 'bson-objectid';
 interface IMessageInputProps {
   session: Session;
@@ -24,10 +28,37 @@ const MessageInput: React.FC<IMessageInputProps> = ({ session, conversationId })
         user: { id: senderId },
       } = session;
       const id = new ObjectID().toString();
+      setMessage('');
       const { data, errors } = await sendMessage({
         variables: { id, senderId, conversationId, body: message },
+        optimisticResponse: { sendMessage: true },
+        update: cache => {
+          const existingCache = cache.readQuery<MessagesResponse>({
+            query: messageOperations.Queries.messages,
+            variables: { conversationId },
+          }) as MessagesResponse;
+          cache.writeQuery<MessagesResponse, { conversationId: string }>({
+            query: messageOperations.Queries.messages,
+            variables: { conversationId },
+            data: {
+              ...existingCache,
+              messages: [
+                {
+                  id,
+                  sender: {
+                    id: senderId,
+                    username: session.user.username,
+                  },
+                  body: message,
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                },
+                ...existingCache.messages,
+              ],
+            },
+          });
+        },
       });
-      setMessage('');
 
       if (!data?.sendMessage || errors) {
         throw new Error('Failed to Send Message');
