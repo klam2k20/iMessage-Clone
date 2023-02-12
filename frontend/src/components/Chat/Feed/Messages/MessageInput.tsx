@@ -37,7 +37,7 @@ const MessageInput: React.FC<IMessageInputProps> = ({ session, conversationId })
   };
 
   return (
-    <Box py={2} px={4} w="100%">
+    <Box mt={2} py={2} px={4} w="100%">
       <form onSubmit={onSendMessage}>
         <Input
           type="text"
