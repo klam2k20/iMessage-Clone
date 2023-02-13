@@ -29,6 +29,10 @@ const typeDefs = gql`
     # Add types for Editing Conversation
   }
 
+  type ConversationDeletedResponse {
+    id: String
+  }
+
   type Query {
     conversations: [Conversation]
   }
@@ -41,12 +45,20 @@ const typeDefs = gql`
     markConversationAsRead(userId: String, conversationId: String): Boolean
   }
 
+  type Mutation {
+    deleteConversation(conversationId: String): Boolean
+  }
+
   type Subscription {
     conversationCreated: Conversation
   }
 
   type Subscription {
     conversationUpdated: ConversationUpdatedResponse
+  }
+
+  type Subscription {
+    conversationDeleted: ConversationDeletedResponse
   }
 `
 

@@ -8,10 +8,9 @@ const resolvers = {
   Query: {
     conversations: async (_: any, __: any, context: GraphQLContext): Promise<Array<ConversationPopulated>> => {
       const { session, prisma } = context;
-
       if (!session?.user) throw new GraphQLError('Unauthorized');
-
       const { user: { id: userId } } = session;
+
       try {
         const conversations = await prisma.conversation.findMany({
           where: {
@@ -25,6 +24,7 @@ const resolvers = {
           },
           include: conversationPopulated,
         });
+
         return conversations;
       } catch (error: any) {
         console.log('conversations Error', error.message);
@@ -37,8 +37,8 @@ const resolvers = {
     createConversation: async (_: any, args: { participants: Array<string> }, context: GraphQLContext): Promise<{ conversationId: string }> => {
       const { participants: participantIds } = args;
       const { session, prisma, pubsub } = context;
-
       if (!session?.user) throw new GraphQLError('Unauthorized')
+
       try {
         const { user: { id: userId } } = session;
         const conversation = await prisma.conversation.create({
@@ -63,6 +63,7 @@ const resolvers = {
         pubsub.publish('CONVERSATION_CREATED', {
           conversationCreated: conversation,
         });
+
         return { conversationId: conversation.id };
       } catch (error: any) {
         console.log('createConversation Error', error.message);
@@ -73,7 +74,6 @@ const resolvers = {
     markConversationAsRead: async (_: any, args: { userId: string, conversationId: string }, context: GraphQLContext) => {
       const { session, prisma } = context;
       const { userId, conversationId } = args;
-
       if (!session?.user) throw new GraphQLError('Unauthorized');
 
       try {
@@ -100,14 +100,53 @@ const resolvers = {
             hasSeenLatestMessage: true
           }
         });
+
         return true;
       } catch (error: any) {
         console.log('markConversationAsRead Error', error.message);
         throw new GraphQLError(error.message);
       }
-
-
     },
+
+    deleteConversation: async (_: any, args: { conversationId: string }, context: GraphQLContext): Promise<boolean> => {
+      const { session, prisma, pubsub } = context;
+      const { conversationId } = args;
+      if (!session?.user) throw new GraphQLError('Unauthorized');
+
+      try {
+        /**
+         * Delete all entities related to the conversation - 
+         * conversation participants and messages
+         */
+        const [deletedConversation] = await prisma.$transaction([
+          prisma.conversation.delete({
+            where: {
+              id: conversationId
+            },
+            include: conversationPopulated,
+          }),
+          prisma.conversationParticipant.deleteMany({
+            where: {
+              conversationId,
+            }
+          }),
+          prisma.message.deleteMany({
+            where: {
+              conversationId
+            }
+          })
+        ]);
+
+        pubsub.publish("CONVERSATION_DELETED", {
+          conversationDeleted: deletedConversation
+        });
+
+        return true;
+      } catch (error: any) {
+        console.log('deleteConversation Error', error.message);
+        throw new GraphQLError(error.message);
+      }
+    }
   },
 
   Subscription: {
@@ -123,19 +162,19 @@ const resolvers = {
         },
         (payload: { conversationCreated: ConversationPopulated }, _, context: GraphQLContext) => {
           const { session } = context;
-
           if (!session?.user) throw new GraphQLError('Unauthorized');
+
           const { user: { id: userId } } = session;
           const { conversationCreated: { participants } } = payload;
           /**
            * If the logged in user isn't in the newly created conversation don't notify the user 
            * of the event. The session.user.id is different for every logged in user
            */
-          const isInConversation = isUserInConversation(userId, participants);
-          return isInConversation;
+          return isUserInConversation(userId, participants);
         }
       )
     },
+
     conversationUpdated: {
       subscribe: withFilter(
         (_: any, __: any, context: GraphQLContext) => {
@@ -144,16 +183,32 @@ const resolvers = {
         },
         (payload: ConversationUpdatedSubscriptionResponse, _, context: GraphQLContext) => {
           const { session } = context;
-
           if (!session?.user) throw new GraphQLError('Unauthorized');
           const { user: { id: userId } } = session;
           const { conversationUpdated: { conversation: { participants } } } = payload;
 
-          const isInConversation = isUserInConversation(userId, participants);
-          return isInConversation;
+          return isUserInConversation(userId, participants);
         }
       )
     },
+
+    conversationDeleted: {
+      subscribe: withFilter(
+        (_: any, __: any, context: GraphQLContext) => {
+          const { pubsub } = context;
+          return pubsub.asyncIterator(['CONVERSATION_DELETED']);
+        },
+        (payload: { conversationDeleted: ConversationPopulated }, _: any, context: GraphQLContext) => {
+          const { session } = context;
+          if (!session?.user) throw new GraphQLError('Unauthorized');
+
+          const { user: { id: userId } } = session;
+          const { conversationDeleted: { participants } } = payload;
+
+          return isUserInConversation(userId, participants);
+        }
+      )
+    }
   },
 }
 
