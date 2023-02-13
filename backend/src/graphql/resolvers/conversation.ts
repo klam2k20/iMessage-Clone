@@ -1,7 +1,8 @@
 import { Prisma } from "@prisma/client";
-import { GraphQLError, GraphQLString } from "graphql";
+import { GraphQLError } from "graphql";
 import { withFilter } from "graphql-subscriptions";
-import { ConversationPopulated, GraphQLContext } from "../../util/types";
+import { ConversationPopulated, ConversationUpdatedSubscriptionResponse, GraphQLContext } from "../../util/types";
+import { isUserInConversation } from '../../util/functions';
 
 const resolvers = {
   Query: {
@@ -11,20 +12,24 @@ const resolvers = {
       if (!session?.user) throw new GraphQLError('Unauthorized');
 
       const { user: { id: userId } } = session;
-      const conversations = await prisma.conversation.findMany({
-        where: {
-          participants: {
-            some: {
-              userId: {
-                equals: userId
+      try {
+        const conversations = await prisma.conversation.findMany({
+          where: {
+            participants: {
+              some: {
+                userId: {
+                  equals: userId
+                }
               }
             }
-          }
-        },
-        include: conversationPopulated,
-      });
-
-      return conversations;
+          },
+          include: conversationPopulated,
+        });
+        return conversations;
+      } catch (error: any) {
+        console.log('conversations Error', error.message);
+        throw new GraphQLError(error.message);
+      }
     },
   },
 
@@ -118,13 +123,33 @@ const resolvers = {
         },
         (payload: { conversationCreated: ConversationPopulated }, _, context: GraphQLContext) => {
           const { session } = context;
+
+          if (!session?.user) throw new GraphQLError('Unauthorized');
+          const { user: { id: userId } } = session;
+          const { conversationCreated: { participants } } = payload;
           /**
            * If the logged in user isn't in the newly created conversation don't notify the user 
            * of the event. The session.user.id is different for every logged in user
            */
-          const isInConversation = !!payload.conversationCreated.participants.find((p) => {
-            return p.userId === session?.user?.id
-          });
+          const isInConversation = isUserInConversation(userId, participants);
+          return isInConversation;
+        }
+      )
+    },
+    conversationUpdated: {
+      subscribe: withFilter(
+        (_: any, __: any, context: GraphQLContext) => {
+          const { pubsub } = context;
+          return pubsub.asyncIterator(['CONVERSATION_UPDATED']);
+        },
+        (payload: ConversationUpdatedSubscriptionResponse, _, context: GraphQLContext) => {
+          const { session } = context;
+
+          if (!session?.user) throw new GraphQLError('Unauthorized');
+          const { user: { id: userId } } = session;
+          const { conversationUpdated: { conversation: { participants } } } = payload;
+
+          const isInConversation = isUserInConversation(userId, participants);
           return isInConversation;
         }
       )

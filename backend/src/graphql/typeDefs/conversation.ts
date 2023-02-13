@@ -24,6 +24,11 @@ const typeDefs = gql`
     conversationId: String
   }
 
+  type ConversationUpdatedResponse {
+    conversation: Conversation
+    # Add types for Editing Conversation
+  }
+
   type Query {
     conversations: [Conversation]
   }
@@ -38,6 +43,10 @@ const typeDefs = gql`
 
   type Subscription {
     conversationCreated: Conversation
+  }
+
+  type Subscription {
+    conversationUpdated: ConversationUpdatedResponse
   }
 `
 
