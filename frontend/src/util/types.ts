@@ -72,6 +72,20 @@ export interface ConversationUpdatedSubscriptionResponse {
   }
 }
 
+export interface ConversationDeletedSubscriptionResponse {
+  conversationDeleted: {
+    id: string;
+  }
+}
+
+export interface DeleteConversationVariables {
+  conversationId: string;
+}
+
+export interface DeleteConversationResponse {
+  deleteConversation: boolean;
+}
+
 /**
  * Message Interfaces
  */

@@ -15,7 +15,7 @@ import {
 import { formatAvatars, formatConversationName } from '@/src/util/functions';
 import formatRelative from 'date-fns/formatRelative';
 import enUS from 'date-fns/locale/en-US';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 /**
  * Format Relative will return a token describing the date
@@ -37,6 +37,7 @@ interface IConversationItemProps {
   onClick: () => void;
   isSelected: boolean;
   hasSeenLatestMessage: boolean;
+  onDeleteConversation: () => void;
 }
 
 const ConversationItem: React.FC<IConversationItemProps> = ({
@@ -45,6 +46,7 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
   onClick,
   isSelected,
   hasSeenLatestMessage,
+  onDeleteConversation,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const formatAvatar = formatAvatars(userId, conversation.participants);
@@ -55,6 +57,16 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
       e.preventDefault();
       setMenuOpen(true);
     }
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    /**
+     * Stop propagation prevents the onClick event
+     * from propogating upward to the parent flex
+     * which also has a onClick event
+     */
+    e.stopPropagation();
+    onDeleteConversation();
   };
 
   return (
@@ -80,7 +92,8 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
           <MenuItem
             bg="#2d2d2d"
             _hover={{ bg: 'whiteAlpha.300' }}
-            icon={<MdOutlineDeleteOutline fontSize={16} />}>
+            icon={<MdOutlineDeleteOutline fontSize={16} />}
+            onClick={e => handleDelete(e)}>
             Delete
           </MenuItem>
         </MenuList>

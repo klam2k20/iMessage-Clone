@@ -4,6 +4,7 @@ import { Session } from 'next-auth';
 import ConversationList from './ConversationList';
 import conversationOperations from '../../../graphql/operations/conversation';
 import {
+  ConversationDeletedSubscriptionResponse,
   ConversationsResponse,
   ConversationSubscriptionResponse,
   ConversationUpdatedSubscriptionResponse,
@@ -118,6 +119,32 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
             },
           });
         }
+      },
+    }
+  );
+
+  useSubscription<ConversationDeletedSubscriptionResponse>(
+    conversationOperations.Subscriptions.conversationDeleted,
+    {
+      onData: ({ client, data }) => {
+        const { data: subscriptionData } = data;
+        if (!subscriptionData) return;
+
+        const {
+          conversationDeleted: { id: conversationId },
+        } = subscriptionData;
+
+        const existingConversations = client.readQuery<ConversationsResponse>({
+          query: conversationOperations.Queries.conversations,
+        });
+        if (!existingConversations) return;
+        const { conversations } = existingConversations;
+        client.writeQuery<ConversationsResponse>({
+          query: conversationOperations.Queries.conversations,
+          data: {
+            conversations: conversations.filter(c => c.id !== conversationId),
+          },
+        });
       },
     }
   );
