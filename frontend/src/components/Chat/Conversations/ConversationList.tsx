@@ -2,8 +2,9 @@ import { ConversationPopulated, ParticipantPopulated } from '@/../backend/src/ut
 import conversationOperations from '@/src/graphql/operations/conversation';
 import { DeleteConversationResponse, DeleteConversationVariables } from '@/src/util/types';
 import { useMutation } from '@apollo/client';
-import { Box, Text } from '@chakra-ui/react';
+import { Box, Button, Text } from '@chakra-ui/react';
 import { Session } from 'next-auth';
+import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -67,21 +68,31 @@ const ConversationList: React.FC<IConversationListProps> = ({
         </Text>
       </Box>
       <ConversationModal session={session} isOpen={isOpen} setIsOpen={setIsOpen} />
-      {loading && <ConversationsSkeleton />}
-      {sortedConversations.map(c => {
-        const participant = c.participants.find((p: ParticipantPopulated) => p.user.id === userId);
-        return (
-          <ConversationItem
-            key={c.id}
-            userId={userId}
-            conversation={c}
-            onClick={() => onViewConversation(c.id, c.hasSeenLatestMessage)}
-            isSelected={router.query.conversationId === c.id}
-            hasSeenLatestMessage={participant.hasSeenLatestMessage}
-            onDeleteConversation={() => onDeleteConversation(c.id)}
-          />
-        );
-      })}
+      <Box h="90%">
+        {loading ? (
+          <ConversationsSkeleton />
+        ) : (
+          sortedConversations.map(c => {
+            const participant = c.participants.find(
+              (p: ParticipantPopulated) => p.user.id === userId
+            );
+            return (
+              <ConversationItem
+                key={c.id}
+                userId={userId}
+                conversation={c}
+                onClick={() => onViewConversation(c.id, c.hasSeenLatestMessage)}
+                isSelected={router.query.conversationId === c.id}
+                hasSeenLatestMessage={participant.hasSeenLatestMessage}
+                onDeleteConversation={() => onDeleteConversation(c.id)}
+              />
+            );
+          })
+        )}
+      </Box>
+      <Button w="100%" onClick={() => signOut()}>
+        Logout
+      </Button>
     </Box>
   );
 };

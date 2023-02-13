@@ -71,6 +71,7 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
 
   return (
     <Flex
+      h="4rem"
       align="center"
       justify="center"
       p={2}
