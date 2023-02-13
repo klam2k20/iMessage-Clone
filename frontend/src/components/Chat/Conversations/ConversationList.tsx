@@ -68,7 +68,7 @@ const ConversationList: React.FC<IConversationListProps> = ({
         </Text>
       </Box>
       <ConversationModal session={session} isOpen={isOpen} setIsOpen={setIsOpen} />
-      <Box h="90%">
+      <Box h="90%" my={4}>
         {loading ? (
           <ConversationsSkeleton />
         ) : (
