@@ -86,10 +86,8 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen,
   };
 
   const addParticipant = (user: SearchedUser) => {
-    if (!participants.some(p => p.id === user.id)) {
-      setParticipants(pre => [...pre, user]);
-      setUsername('');
-    }
+    setParticipants(pre => [...pre, user]);
+    setUsername('');
   };
 
   const removeParticipant = (userId: string) => {
@@ -116,8 +114,12 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen,
                 </Button>
               </Stack>
             </form>
-            {username && data?.searchUsers && (
-              <SearchedUserList users={data.searchUsers} addParticipant={addParticipant} />
+            {data?.searchUsers && (
+              <SearchedUserList
+                users={data.searchUsers}
+                participants={participants}
+                addParticipant={addParticipant}
+              />
             )}
             {participants.length > 0 && (
               <ParticipantList participants={participants} removeParticipant={removeParticipant} />
