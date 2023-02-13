@@ -63,6 +63,15 @@ export interface MarkConversationAsReadVariables {
   conversationId: string;
 }
 
+export interface ConversationUpdatedSubscriptionResponse {
+  conversationUpdated: {
+    conversation: ConversationPopulated;
+    /**
+     * Add removed and added users
+     */
+  }
+}
+
 /**
  * Message Interfaces
  */

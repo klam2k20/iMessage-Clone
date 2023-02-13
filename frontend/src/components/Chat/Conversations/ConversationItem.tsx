@@ -96,7 +96,7 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
           </AvatarGroup>
         )}
       </Flex>
-      <Flex flex={4} flexDirection="column" w="80%">
+      <Flex flex={4} flexDirection="column" w="80%" maxW="80%">
         <Flex justify="space-between" gap={1}>
           <Text flex={3} fontWeight={600} isTruncated>
             {formatConversationName(userId, conversation.participants)}

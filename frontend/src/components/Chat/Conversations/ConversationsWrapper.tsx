@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
 import { Box } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import ConversationList from './ConversationList';
@@ -6,20 +6,29 @@ import conversationOperations from '../../../graphql/operations/conversation';
 import {
   ConversationsResponse,
   ConversationSubscriptionResponse,
+  ConversationUpdatedSubscriptionResponse,
   MarkConversationAsReadResponse,
   MarkConversationAsReadVariables,
+  MessagesResponse,
 } from '@/src/util/types';
 import { cache, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { ConversationsSkeleton } from '../../Common/SkeletonLoader';
 import { toast } from 'react-hot-toast';
 import { ParticipantPopulated } from '@/../backend/src/util/types';
+import messageOperations from '@/src/graphql/operations/message';
 
 interface IConversationWrapperProps {
   session: Session;
 }
 
 const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) => {
+  const router = useRouter();
+  const {
+    user: { id: userId },
+  } = session;
+  const { conversationId } = router.query;
+
   const {
     data: conversationData,
     loading,
@@ -27,7 +36,7 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
     subscribeToMore,
   } = useQuery<ConversationsResponse>(conversationOperations.Queries.conversations);
 
-  const subscribeToNewConversation = () => {
+  const subscribeToNewConversation = () =>
     subscribeToMore({
       document: conversationOperations.Subscriptions.conversationCreated,
       updateQuery: (prev, { subscriptionData }: ConversationSubscriptionResponse) => {
@@ -38,8 +47,6 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
         });
       },
     });
-  };
-
   const [
     markConversationAsRead,
     { data, loading: markConversationAsReadLoading, error: markConversationAsReadError },
@@ -47,16 +54,79 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
     conversationOperations.Mutations.markConversationAsRead
   );
 
-  const router = useRouter();
-  const {
-    user: { id: userId },
-  } = session;
-  const { conversationId } = router.query;
+  useSubscription<ConversationUpdatedSubscriptionResponse>(
+    conversationOperations.Subscriptions.conversationUpdated,
+    {
+      /**
+       * Apollo client uses the conversation Id to udpate the
+       * cache under the hood
+       */
+      onData: ({ client, data }) => {
+        const { data: subscriptionData } = data;
+        if (!subscriptionData) return;
+
+        /**
+         * Update hasSeenLatestMessage to true if the conversation
+         * updated is the conversation selected. The backend automatically
+         * sets hasSeenLatestMessage to false when sending a new message
+         */
+        const {
+          conversationUpdated: { conversation },
+        } = subscriptionData;
+        const isSelectedConversation = conversation.id === conversationId;
+        if (isSelectedConversation) {
+          onViewConversation(conversationId as string, false);
+          return;
+        }
+
+        /**
+         * Update Messages Query. The useQuery is only run once during
+         * the initial render. The Messages Query is updated when you are
+         * chatting with a selected conversation. However, if you
+         * are talking to someone else and get an update that message won't update
+         * the query since the subscribeToNewMessages only subscribes to a specific
+         * conversation
+         */
+
+        /**
+         * Get the cached messages for Messages query for the newly
+         * updated conversation
+         */
+        const existingMessages = client.readQuery<MessagesResponse>({
+          query: messageOperations.Queries.messages,
+          variables: { conversationId: conversation.id },
+        });
+
+        /**
+         * If the cached messages doesn't contain the new message
+         * - which it won't if the user was talking to someone else when
+         * the notification comes in - write the latest message to the
+         * Messages query cache
+         */
+        if (!existingMessages) return;
+        const hasLatestMessage = existingMessages.messages.find(
+          m => m.id === conversation.latestMessage.id
+        );
+
+        if (!hasLatestMessage) {
+          client.writeQuery<MessagesResponse>({
+            query: messageOperations.Queries.messages,
+            variables: { conversationId: conversation.id },
+            data: {
+              ...existingMessages,
+              messages: [conversation.latestMessage, ...existingMessages.messages],
+            },
+          });
+        }
+      },
+    }
+  );
+
   const onViewConversation = async (conversationId: string, hasSeenLatestMessage: boolean) => {
     router.push({ query: { conversationId } });
 
     /**
-     * Mark conversation as read
+     * Mark conversation as read and use optimistic rendering
      */
     if (!hasSeenLatestMessage)
       try {
@@ -92,8 +162,9 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
             const participants = [...participantFragment.participants];
             const i = participants.findIndex(p => p.user.id === userId);
             if (i === -1) return;
+            const userParticipant = participants[i];
             participants[i] = {
-              ...participants[i],
+              ...userParticipant,
               hasSeenLatestMessage: true,
             };
 
@@ -103,7 +174,7 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
             cache.writeFragment({
               id: `Conversation:${conversationId}`,
               fragment: gql`
-                fragment Participants on Conversation {
+                fragment UpdatedParticipants on Conversation {
                   participants
                 }
               `,
@@ -126,7 +197,8 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
   return (
     <Box
       display={{ base: conversationId ? 'none' : 'flex', md: 'flex' }}
-      w={{ base: '100%', md: '400px' }}
+      minW={{ base: '100%', md: '400px' }}
+      maxW={{ base: '100%', md: '400px' }}
       bg="whiteAlpha.50"
       py={8}
       px={4}>

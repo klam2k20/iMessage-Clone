@@ -16,6 +16,7 @@ const conversationPopulated = `
       username
     }
     body
+    createdAt
   }
   updatedAt
 `
@@ -49,6 +50,15 @@ const conversationOperations = {
       subscription conversationCreated {
         conversationCreated {
           ${conversationPopulated}
+        }
+      }
+    `,
+    conversationUpdated: gql`
+      subscription conversationUpdated {
+        conversationUpdated {
+          conversation {
+            ${conversationPopulated}
+          }
         }
       }
     `,
