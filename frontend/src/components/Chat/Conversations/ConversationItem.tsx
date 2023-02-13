@@ -26,7 +26,7 @@ import { useState } from 'react';
  */
 const formatRelativeLocale = {
   lastWeek: 'eeee',
-  yesterday: "'Yesterday",
+  yesterday: "'Yesterday'",
   today: 'p',
   other: 'MM/dd/yy',
 };
