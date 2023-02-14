@@ -26,7 +26,8 @@ const typeDefs = gql`
 
   type ConversationUpdatedResponse {
     conversation: Conversation
-    # Add types for Editing Conversation
+    addedParticipantsIds: [String]
+    removedParticipantIds: [String]
   }
 
   type ConversationDeletedResponse {
@@ -47,6 +48,10 @@ const typeDefs = gql`
 
   type Mutation {
     deleteConversation(conversationId: String): Boolean
+  }
+
+  type Mutation  {
+    updateConversationParticipants(conversationId: String, participantIds: [String]): Boolean
   }
 
   type Subscription {
