@@ -1,8 +1,8 @@
 import { Prisma } from "@prisma/client";
 import { GraphQLError } from "graphql";
 import { withFilter } from "graphql-subscriptions";
-import { ConversationPopulated, ConversationUpdatedSubscriptionResponse, GraphQLContext } from "../../util/types";
 import { isUserInConversation } from '../../util/functions';
+import { ConversationPopulated, ConversationUpdatedSubscriptionResponse, GraphQLContext } from "../../util/types";
 
 const resolvers = {
   Query: {

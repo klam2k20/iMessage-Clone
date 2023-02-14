@@ -1,20 +1,20 @@
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import cors from 'cors';
-import { json } from 'body-parser';
-import express from 'express';
 import { makeExecutableSchema } from '@graphql-tools/schema';
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
+import { json } from 'body-parser';
+import cors from 'cors';
 import * as dotenv from 'dotenv';
-import { getSession } from "next-auth/react";
-import typeDefs from './graphql/typeDefs';
-import resolvers from './graphql/resolvers';
-import { GraphQLContext, Session, SubscriptionContext } from './util/types';
-import { createServer } from 'http';
-import { WebSocketServer } from 'ws';
-import { useServer } from 'graphql-ws/lib/use/ws';
+import express from 'express';
 import { PubSub } from 'graphql-subscriptions';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import { createServer } from 'http';
+import { getSession } from "next-auth/react";
+import { WebSocketServer } from 'ws';
+import resolvers from './graphql/resolvers';
+import typeDefs from './graphql/typeDefs';
+import { GraphQLContext, Session, SubscriptionContext } from './util/types';
 
 
 /**

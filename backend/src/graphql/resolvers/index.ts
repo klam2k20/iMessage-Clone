@@ -1,7 +1,7 @@
-import userResolvers from './user';
+import merge from 'lodash.merge';
 import conversationResolvers from './conversation';
 import messageResolvers from './message';
-import merge from 'lodash.merge';
+import userResolvers from './user';
 
 const resolvers = merge({}, userResolvers, messageResolvers, conversationResolvers);
 
