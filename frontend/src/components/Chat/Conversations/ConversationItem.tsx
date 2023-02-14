@@ -28,6 +28,7 @@ interface IConversationItemProps {
   isSelected: boolean;
   hasSeenLatestMessage: boolean;
   onDeleteConversation: () => void;
+  onEditConversation: () => void;
 }
 
 const ConversationItem: React.FC<IConversationItemProps> = ({
@@ -37,6 +38,7 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
   isSelected,
   hasSeenLatestMessage,
   onDeleteConversation,
+  onEditConversation,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const formatAvatar = formatAvatars(userId, conversation.participants);
@@ -59,6 +61,16 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
     onDeleteConversation();
   };
 
+  const handleEdit = (e: React.MouseEvent) => {
+    /**
+     * Stop propagation prevents the onClick event
+     * from propogating upward to the parent flex
+     * which also has a onClick event
+     */
+    e.stopPropagation();
+    onEditConversation();
+  };
+
   return (
     <Flex
       h="4rem"
@@ -78,7 +90,8 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
           <MenuItem
             bg="#2d2d2d"
             _hover={{ bg: 'whiteAlpha.300' }}
-            icon={<MdOutlineModeEditOutline fontSize={16} />}>
+            icon={<MdOutlineModeEditOutline fontSize={16} />}
+            onClick={e => handleEdit(e)}>
             Edit
           </MenuItem>
           <MenuItem

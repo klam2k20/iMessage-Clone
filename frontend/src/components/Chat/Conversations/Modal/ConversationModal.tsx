@@ -34,16 +34,20 @@ interface IConversationModalProps {
   session: Session;
   isOpen: boolean;
   setIsOpen: (state: boolean) => void;
+  setEditConversation: (state: ConversationPopulated) => void;
   conversations: Array<ConversationPopulated>;
   onViewConversation: (conversationId: string, hasSeenLatestMessage: boolean) => void;
+  editConversation: ConversationPopulated | null;
 }
 
 const ConversationModal: React.FC<IConversationModalProps> = ({
   session,
   isOpen,
   setIsOpen,
+  setEditConversation,
   conversations,
   onViewConversation,
+  editConversation,
 }) => {
   const [username, setUsername] = useState('');
   const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
@@ -68,6 +72,8 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
     setIsOpen(false);
     setUsername('');
     setParticipants([]);
+    setExistingConversation(null);
+    setEditConversation(null);
   };
 
   const onSearch = (e: FormEvent) => {
@@ -133,7 +139,17 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
 
   useEffect(() => {
     setExistingConversation(null);
-  }, [isOpen, participants]);
+  }, [participants]);
+
+  useEffect(() => {
+    if (editConversation) {
+      const conversationParticipants = editConversation.participants
+        .filter((p: ParticipantPopulated) => p.user.id !== userId)
+        .map((p: ParticipantPopulated) => p.user as SearchedUser);
+      setParticipants(conversationParticipants);
+      setIsOpen(true);
+    }
+  }, [editConversation, setIsOpen, userId]);
 
   return (
     <>
@@ -174,6 +190,7 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
                   isSelected={false}
                   hasSeenLatestMessage={true}
                   onDeleteConversation={() => {}}
+                  onEditConversation={() => {}}
                 />
               </Box>
             )}

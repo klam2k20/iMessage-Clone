@@ -26,6 +26,7 @@ const ConversationList: React.FC<IConversationListProps> = ({
   loading,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [editConversation, setEditConversation] = useState<ConversationPopulated | null>();
   const onOpen = () => setIsOpen(true);
   const {
     user: { id: userId },
@@ -71,8 +72,10 @@ const ConversationList: React.FC<IConversationListProps> = ({
         session={session}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
+        setEditConversation={setEditConversation}
         conversations={conversations}
         onViewConversation={onViewConversation}
+        editConversation={editConversation}
       />
       <Box h="90%" my={4}>
         {loading ? (
@@ -91,6 +94,7 @@ const ConversationList: React.FC<IConversationListProps> = ({
                 isSelected={router.query.conversationId === c.id}
                 hasSeenLatestMessage={participant.hasSeenLatestMessage}
                 onDeleteConversation={() => onDeleteConversation(c.id)}
+                onEditConversation={() => setEditConversation(c)}
               />
             );
           })
