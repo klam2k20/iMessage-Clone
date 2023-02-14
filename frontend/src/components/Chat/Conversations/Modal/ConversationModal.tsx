@@ -138,7 +138,14 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
   };
 
   useEffect(() => {
-    setExistingConversation(null);
+    const isEqual = areParticipantsEqual(
+      [userId, ...participants.map(p => p.id)],
+      editConversation?.participants.map(p => p.user.id) || []
+    );
+    if (isEqual) setExistingConversation(editConversation);
+    else {
+      setExistingConversation(null);
+    }
   }, [participants]);
 
   useEffect(() => {
@@ -201,14 +208,7 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
               bg="brand.100"
               _hover={{ bg: 'brand.100' }}
               onClick={onCreateConversation}
-              isDisabled={
-                !!existingConversation ||
-                participants.length == 0 ||
-                areParticipantsEqual(
-                  [userId, ...participants.map(p => p.id)],
-                  editConversation?.participants.map(p => p.user.id) || []
-                )
-              }
+              isDisabled={!!existingConversation || participants.length == 0}
               isLoading={createConversationLoading}>
               {editConversation ? 'Update Conversation' : 'Create Conversation'}
             </Button>
