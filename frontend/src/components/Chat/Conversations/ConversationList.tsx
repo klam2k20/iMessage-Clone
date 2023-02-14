@@ -1,6 +1,11 @@
 import { ConversationPopulated, ParticipantPopulated } from '@/../backend/src/util/types';
 import conversationOperations from '@/src/graphql/operations/conversation';
-import { DeleteConversationResponse, DeleteConversationVariables } from '@/src/util/types';
+import {
+  DeleteConversationResponse,
+  DeleteConversationVariables,
+  UpdateConversationParticipantsResponse,
+  UpdateConversationParticipantsVariables,
+} from '@/src/util/types';
 import { useMutation } from '@apollo/client';
 import { Box, Button, Text } from '@chakra-ui/react';
 import { Session } from 'next-auth';
@@ -40,6 +45,28 @@ const ConversationList: React.FC<IConversationListProps> = ({
   const [deleteConversation] = useMutation<DeleteConversationResponse, DeleteConversationVariables>(
     conversationOperations.Mutations.deleteConversation
   );
+
+  const [updateConversationParticipants] = useMutation<
+    UpdateConversationParticipantsResponse,
+    UpdateConversationParticipantsVariables
+  >(conversationOperations.Mutations.updateConversationParticipants);
+
+  const onLeaveConversation = async (conversation: ConversationPopulated) => {
+    const filteredParticipantIds = conversation.participants
+      .filter(p => p.user.id !== userId)
+      .map(p => p.user.id);
+    try {
+      await updateConversationParticipants({
+        variables: {
+          conversationId: conversation.id,
+          participantIds: filteredParticipantIds,
+        },
+      });
+    } catch (error: any) {
+      console.log('onLeaveConversation Error', error.message);
+      toast.error(error.message);
+    }
+  };
 
   const onDeleteConversation = (conversationId: string) => {
     try {
@@ -95,6 +122,7 @@ const ConversationList: React.FC<IConversationListProps> = ({
                 hasSeenLatestMessage={participant.hasSeenLatestMessage}
                 onDeleteConversation={() => onDeleteConversation(c.id)}
                 onEditConversation={() => setEditConversation(c)}
+                onLeaveConversation={() => onLeaveConversation(c)}
               />
             );
           })

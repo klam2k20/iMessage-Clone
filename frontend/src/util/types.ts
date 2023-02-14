@@ -66,9 +66,8 @@ export interface MarkConversationAsReadVariables {
 export interface ConversationUpdatedSubscriptionResponse {
   conversationUpdated: {
     conversation: ConversationPopulated;
-    /**
-     * Add removed and added users
-     */
+    addedParticipantIds: string[];
+    deletedParticipantIds: string[];
   }
 }
 
@@ -84,6 +83,15 @@ export interface DeleteConversationVariables {
 
 export interface DeleteConversationResponse {
   deleteConversation: boolean;
+}
+
+export interface UpdateConversationParticipantsVariables {
+  conversationId: string;
+  participantIds: string[];
+}
+
+export interface UpdateConversationParticipantsResponse {
+  updateConversationParticipants: boolean;
 }
 
 /**

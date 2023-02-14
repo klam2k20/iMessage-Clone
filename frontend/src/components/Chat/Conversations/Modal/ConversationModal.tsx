@@ -6,6 +6,8 @@ import {
   SearchedUser,
   SearchUserResponse,
   SearchUserVariables,
+  UpdateConversationParticipantsResponse,
+  UpdateConversationParticipantsVariables,
 } from '@/src/util/types';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import {
@@ -60,6 +62,10 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
     CreateConversationResponse,
     CreateConversationVariables
   >(conversationOperations.Mutations.createConversation);
+  const [updateConversationParticipants] = useMutation<
+    UpdateConversationParticipantsResponse,
+    UpdateConversationParticipantsVariables
+  >(conversationOperations.Mutations.updateConversationParticipants);
   const router = useRouter();
   const {
     user: { id: userId },
@@ -103,6 +109,20 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
         console.log('onCreateConversation Error', error.message);
         toast.error(error.message);
       }
+    }
+  };
+
+  const onUpdateConversation = async () => {
+    try {
+      const participantIds = [...participants.map(p => p.id), userId];
+      await updateConversationParticipants({
+        variables: { conversationId: editConversation.id, participantIds },
+      });
+
+      onClose();
+    } catch (error: any) {
+      console.log('onUpdateConversation Error', error.message);
+      toast.error(error.message);
     }
   };
 
@@ -198,6 +218,7 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
                   hasSeenLatestMessage={true}
                   onDeleteConversation={() => {}}
                   onEditConversation={() => {}}
+                  onLeaveConversation={() => {}}
                 />
               </Box>
             )}
@@ -207,7 +228,7 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
               cursor="pointer"
               bg="brand.100"
               _hover={{ bg: 'brand.100' }}
-              onClick={onCreateConversation}
+              onClick={editConversation ? onUpdateConversation : onCreateConversation}
               isDisabled={!!existingConversation || participants.length == 0}
               isLoading={createConversationLoading}>
               {editConversation ? 'Update Conversation' : 'Create Conversation'}

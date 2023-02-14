@@ -29,6 +29,7 @@ interface IConversationItemProps {
   hasSeenLatestMessage: boolean;
   onDeleteConversation: () => void;
   onEditConversation: () => void;
+  onLeaveConversation: () => void;
 }
 
 const ConversationItem: React.FC<IConversationItemProps> = ({
@@ -39,6 +40,7 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
   hasSeenLatestMessage,
   onDeleteConversation,
   onEditConversation,
+  onLeaveConversation,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const formatAvatar = formatAvatars(userId, conversation.participants);
@@ -62,13 +64,13 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
   };
 
   const handleEdit = (e: React.MouseEvent) => {
-    /**
-     * Stop propagation prevents the onClick event
-     * from propogating upward to the parent flex
-     * which also has a onClick event
-     */
     e.stopPropagation();
     onEditConversation();
+  };
+
+  const handleLeave = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onLeaveConversation();
   };
 
   return (
@@ -94,13 +96,23 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
             onClick={e => handleEdit(e)}>
             Edit
           </MenuItem>
-          <MenuItem
-            bg="#2d2d2d"
-            _hover={{ bg: 'whiteAlpha.300' }}
-            icon={<MdOutlineDeleteOutline fontSize={16} />}
-            onClick={e => handleDelete(e)}>
-            Delete
-          </MenuItem>
+          {conversation.participants.length > 2 ? (
+            <MenuItem
+              bg="#2d2d2d"
+              _hover={{ bg: 'whiteAlpha.300' }}
+              icon={<MdOutlineDeleteOutline fontSize={16} />}
+              onClick={e => handleLeave(e)}>
+              Leave
+            </MenuItem>
+          ) : (
+            <MenuItem
+              bg="#2d2d2d"
+              _hover={{ bg: 'whiteAlpha.300' }}
+              icon={<MdOutlineDeleteOutline fontSize={16} />}
+              onClick={e => handleDelete(e)}>
+              Delete
+            </MenuItem>
+          )}
         </MenuList>
       </Menu>
       {hasSeenLatestMessage === false && <GoPrimitiveDot fontSize={16} color="#1982FC" />}

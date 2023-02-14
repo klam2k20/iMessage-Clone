@@ -71,9 +71,53 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
          * sets hasSeenLatestMessage to false when sending a new message
          */
         const {
-          conversationUpdated: { conversation },
+          conversationUpdated: { conversation, addedParticipantIds, deletedParticipantIds },
         } = subscriptionData;
         const isSelectedConversation = conversation.id === conversationId;
+
+        if (
+          addedParticipantIds &&
+          addedParticipantIds.length &&
+          addedParticipantIds.includes(userId)
+        ) {
+          const existingConversations = client.readQuery<ConversationsResponse>({
+            query: conversationOperations.Queries.conversations,
+          });
+          if (!existingConversations) return;
+
+          client.writeQuery<ConversationsResponse>({
+            query: conversationOperations.Queries.conversations,
+            data: {
+              conversations: [...existingConversations.conversations, conversation],
+            },
+          });
+          return;
+        }
+
+        if (
+          deletedParticipantIds &&
+          deletedParticipantIds.length &&
+          deletedParticipantIds.includes(userId)
+        ) {
+          const existingConversations = client.readQuery<ConversationsResponse>({
+            query: conversationOperations.Queries.conversations,
+          });
+          if (!existingConversations) return;
+
+          const filteredConversations = existingConversations.conversations.filter(
+            c => c.id !== conversation.id
+          );
+
+          client.writeQuery<ConversationsResponse>({
+            query: conversationOperations.Queries.conversations,
+            data: {
+              conversations: filteredConversations,
+            },
+          });
+          if (isSelectedConversation) router.push('/');
+          return;
+        }
+
         if (isSelectedConversation) {
           onViewConversation(conversationId as string, false);
           return;
