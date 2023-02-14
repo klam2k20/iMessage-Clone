@@ -137,9 +137,9 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} size={{ base: 'full', md: 'md' }}>
         <ModalOverlay />
-        <ModalContent bg="2d2d2d" pb={4}>
+        <ModalContent bg="#1f1f1f" pb={4}>
           <ModalHeader>Create Converation</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
