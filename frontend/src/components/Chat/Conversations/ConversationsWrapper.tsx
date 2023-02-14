@@ -224,8 +224,8 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
   return (
     <Box
       display={{ base: conversationId ? 'none' : 'flex', md: 'flex' }}
-      minW={{ base: '100%', md: '35%' }}
-      maxW={{ base: '100%', md: '35%' }}
+      minW={{ base: '100%', md: '400px' }}
+      maxW={{ base: '100%', md: '400px' }}
       bg="whiteAlpha.50"
       py={8}
       px={4}>
