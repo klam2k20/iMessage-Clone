@@ -26,8 +26,8 @@ const typeDefs = gql`
 
   type ConversationUpdatedResponse {
     conversation: Conversation
-    addedParticipantsIds: [String]
-    removedParticipantIds: [String]
+    addedParticipantIds: [String]
+    deletedParticipantIds: [String]
   }
 
   type ConversationDeletedResponse {

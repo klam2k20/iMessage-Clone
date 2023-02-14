@@ -50,9 +50,8 @@ export type ParticipantPopulated = Prisma.ConversationParticipantGetPayload<{ in
 export interface ConversationUpdatedSubscriptionResponse {
   conversationUpdated: {
     conversation: ConversationPopulated;
-    /**
-     * Add removed and added users
-     */
+    addedParticipantIds: string[];
+    deletedParticipantIds: string[];
   }
 }
 
