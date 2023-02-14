@@ -113,6 +113,8 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
   };
 
   const onUpdateConversation = async () => {
+    const participantIds = [userId, ...participants.map(p => p.id)];
+    if (findExistingConversation(participantIds)) return;
     try {
       const participantIds = [...participants.map(p => p.id), userId];
       await updateConversationParticipants({
