@@ -1,5 +1,5 @@
 import { ConversationPopulated, ParticipantPopulated } from '@/../backend/src/util/types';
-import { findUserParticipant } from '@/src/util/functions';
+import { areParticipantsEqual, findUserParticipant } from '@/src/util/functions';
 import {
   CreateConversationResponse,
   CreateConversationVariables,
@@ -149,7 +149,7 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
       setParticipants(conversationParticipants);
       setIsOpen(true);
     }
-  }, [editConversation, setIsOpen, userId]);
+  }, [editConversation]);
 
   return (
     <>
@@ -201,9 +201,16 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
               bg="brand.100"
               _hover={{ bg: 'brand.100' }}
               onClick={onCreateConversation}
-              isDisabled={!!existingConversation}
+              isDisabled={
+                !!existingConversation ||
+                participants.length == 0 ||
+                areParticipantsEqual(
+                  [userId, ...participants.map(p => p.id)],
+                  editConversation?.participants.map(p => p.user.id) || []
+                )
+              }
               isLoading={createConversationLoading}>
-              Create Conversation
+              {editConversation ? 'Update Conversation' : 'Create Conversation'}
             </Button>
           </ModalBody>
         </ModalContent>
