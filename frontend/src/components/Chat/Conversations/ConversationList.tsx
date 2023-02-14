@@ -67,7 +67,13 @@ const ConversationList: React.FC<IConversationListProps> = ({
           Find or Start a Conversation
         </Text>
       </Box>
-      <ConversationModal session={session} isOpen={isOpen} setIsOpen={setIsOpen} />
+      <ConversationModal
+        session={session}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        conversations={conversations}
+        onViewConversation={onViewConversation}
+      />
       <Box h="90%" my={4}>
         {loading ? (
           <ConversationsSkeleton />

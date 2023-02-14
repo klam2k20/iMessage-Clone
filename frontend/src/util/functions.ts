@@ -10,3 +10,8 @@ export function formatAvatars(userId: string, participants: Array<ParticipantPop
   return usernames;
 }
 
+export function findUserParticipant(userId: string, participants: Array<ParticipantPopulated>): ParticipantPopulated | null {
+  const participant = participants.find(p => p.user.id === userId);
+  return participant || null;
+}
+

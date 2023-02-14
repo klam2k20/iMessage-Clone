@@ -65,6 +65,7 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
       align="center"
       justify="center"
       p={2}
+      cursor="pointer"
       borderRadius="md"
       bg={isSelected ? 'whiteAlpha.200' : 'none'}
       _hover={{ bg: 'whiteAlpha.200' }}

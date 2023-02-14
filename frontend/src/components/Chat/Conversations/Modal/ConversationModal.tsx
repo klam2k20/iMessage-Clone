@@ -1,3 +1,5 @@
+import { ConversationPopulated, ParticipantPopulated } from '@/../backend/src/util/types';
+import { findUserParticipant } from '@/src/util/functions';
 import {
   CreateConversationResponse,
   CreateConversationVariables,
@@ -7,6 +9,7 @@ import {
 } from '@/src/util/types';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import {
+  Box,
   Button,
   Input,
   Modal,
@@ -19,10 +22,11 @@ import {
 } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import { useRouter } from 'next/router';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import conversationOperations from '../../../../graphql/operations/conversation';
 import userOperations from '../../../../graphql/operations/user';
+import ConversationItem from '../ConversationItem';
 import ParticipantList from './ParticipantList';
 import SearchedUserList from './SearchedUserList';
 
@@ -30,11 +34,20 @@ interface IConversationModalProps {
   session: Session;
   isOpen: boolean;
   setIsOpen: (state: boolean) => void;
+  conversations: Array<ConversationPopulated>;
+  onViewConversation: (conversationId: string, hasSeenLatestMessage: boolean) => void;
 }
 
-const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen, setIsOpen }) => {
+const ConversationModal: React.FC<IConversationModalProps> = ({
+  session,
+  isOpen,
+  setIsOpen,
+  conversations,
+  onViewConversation,
+}) => {
   const [username, setUsername] = useState('');
   const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
+  const [existingConversation, setExistingConversation] = useState<ConversationPopulated | null>();
   let [searchUser, { data, loading, error }] = useLazyQuery<
     SearchUserResponse,
     SearchUserVariables
@@ -65,6 +78,8 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen,
   const onCreateConversation = async () => {
     if (participants.length >= 1) {
       const participantIds = [userId, ...participants.map(p => p.id)];
+
+      if (findExistingConversation(participantIds)) return;
       try {
         const { data: conversation } = await createConversation({
           variables: { participants: participantIds },
@@ -85,6 +100,20 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen,
     }
   };
 
+  const findExistingConversation = (participantIds: string[]): ConversationPopulated => {
+    const potentialMatchingConversations = conversations.filter(
+      c => c.participants.length === participantIds.length
+    );
+    const conversation = potentialMatchingConversations.find(c =>
+      c.participants.reduce(
+        (acc: boolean, p: ParticipantPopulated) => acc && participantIds.includes(p.user.id),
+        true
+      )
+    );
+    if (conversation) setExistingConversation(conversation);
+    return conversation;
+  };
+
   const addParticipant = (user: SearchedUser) => {
     setParticipants(pre => [...pre, user]);
     setUsername('');
@@ -93,6 +122,18 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen,
   const removeParticipant = (userId: string) => {
     setParticipants(pre => pre.filter(p => p.id !== userId));
   };
+
+  const onExistingConversation = () => {
+    const userParticipant = findUserParticipant(userId, existingConversation.participants);
+    if (userParticipant) {
+      onClose();
+      onViewConversation(existingConversation.id, userParticipant.hasSeenLatestMessage);
+    }
+  };
+
+  useEffect(() => {
+    setExistingConversation(null);
+  }, [isOpen, participants]);
 
   return (
     <>
@@ -124,6 +165,18 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen,
             {participants.length > 0 && (
               <ParticipantList participants={participants} removeParticipant={removeParticipant} />
             )}
+            {existingConversation && (
+              <Box pt={4}>
+                <ConversationItem
+                  userId={userId}
+                  conversation={existingConversation}
+                  onClick={onExistingConversation}
+                  isSelected={false}
+                  hasSeenLatestMessage={true}
+                  onDeleteConversation={() => {}}
+                />
+              </Box>
+            )}
             <Button
               mt={4}
               w="100%"
@@ -131,6 +184,7 @@ const ConversationModal: React.FC<IConversationModalProps> = ({ session, isOpen,
               bg="brand.100"
               _hover={{ bg: 'brand.100' }}
               onClick={onCreateConversation}
+              isDisabled={!!existingConversation}
               isLoading={createConversationLoading}>
               Create Conversation
             </Button>
