@@ -1,5 +1,5 @@
 import {
-  ConversationPopulated, MessagePopulated,
+  ConversationPopulated, MessagePopulated
 } from "../../../backend/src/util/types";
 
 /**

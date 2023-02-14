@@ -1,4 +1,4 @@
-import { Avatar, Flex, Skeleton, SkeletonCircle, Stack, Text } from '@chakra-ui/react';
+import { Flex, Skeleton, SkeletonCircle, Stack } from '@chakra-ui/react';
 
 export const ConversationsSkeleton: React.FunctionComponent = () => {
   return (

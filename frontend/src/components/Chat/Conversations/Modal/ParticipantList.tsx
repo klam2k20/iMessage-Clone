@@ -1,6 +1,6 @@
-import { SearchedUser } from "@/src/util/types";
-import { IoIosCloseCircleOutline } from "react-icons/io";
-import { Flex, Text } from "@chakra-ui/react";
+import { SearchedUser } from '@/src/util/types';
+import { Flex, Text } from '@chakra-ui/react';
+import { IoIosCloseCircleOutline } from 'react-icons/io';
 
 interface IParticipantListProps {
   participants: Array<SearchedUser>;
@@ -10,20 +10,20 @@ interface IParticipantListProps {
 const ParticipantList: React.FC<IParticipantListProps> = ({ participants, removeParticipant }) => {
   return (
     <Flex gap={4} mt={4}>
-      {participants.map((p) => (
+      {participants.map(p => (
         <Flex
           key={p.id}
-          align='center'
-          bg='whiteAlpha.200'
-          borderRadius='md'
+          align="center"
+          bg="whiteAlpha.200"
+          borderRadius="md"
           py={1}
           px={2}
-          wrap='wrap'
+          wrap="wrap"
           gap={2}>
           <Text>{p.username}</Text>
           <IoIosCloseCircleOutline
             size={20}
-            cursor='pointer'
+            cursor="pointer"
             onClick={() => removeParticipant(p.id)}
           />
         </Flex>

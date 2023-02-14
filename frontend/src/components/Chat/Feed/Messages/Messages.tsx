@@ -1,12 +1,12 @@
+import { MessagesSkeleton } from '@/src/components/Common/SkeletonLoader';
 import messageOperations from '@/src/graphql/operations/message';
 import { MessagesResponse, MessageSubscriptionResponse, MessagesVariables } from '@/src/util/types';
 import { useQuery } from '@apollo/client';
 import { Flex } from '@chakra-ui/react';
+import differenceInHours from 'date-fns/differenceInHours';
 import { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import MessageItem from './MessageItem';
-import differenceInHours from 'date-fns/differenceInHours';
-import { MessagesSkeleton } from '@/src/components/Common/SkeletonLoader';
 
 interface IMessagesProps {
   userId: string;

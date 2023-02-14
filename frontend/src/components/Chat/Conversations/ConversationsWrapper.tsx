@@ -1,8 +1,5 @@
-import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
-import { Box } from '@chakra-ui/react';
-import { Session } from 'next-auth';
-import ConversationList from './ConversationList';
-import conversationOperations from '../../../graphql/operations/conversation';
+import { ParticipantPopulated } from '@/../backend/src/util/types';
+import messageOperations from '@/src/graphql/operations/message';
 import {
   ConversationDeletedSubscriptionResponse,
   ConversationsResponse,
@@ -12,12 +9,14 @@ import {
   MarkConversationAsReadVariables,
   MessagesResponse,
 } from '@/src/util/types';
-import { cache, useEffect } from 'react';
+import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
+import { Box } from '@chakra-ui/react';
+import { Session } from 'next-auth';
 import { useRouter } from 'next/router';
-import { ConversationsSkeleton } from '../../Common/SkeletonLoader';
+import { useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import { ParticipantPopulated } from '@/../backend/src/util/types';
-import messageOperations from '@/src/graphql/operations/message';
+import conversationOperations from '../../../graphql/operations/conversation';
+import ConversationList from './ConversationList';
 
 interface IConversationWrapperProps {
   session: Session;

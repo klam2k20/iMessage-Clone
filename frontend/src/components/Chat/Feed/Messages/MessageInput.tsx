@@ -1,15 +1,15 @@
-import { Box, Input } from '@chakra-ui/react';
-import { Session } from 'next-auth';
-import React, { cache, useState } from 'react';
-import { toast } from 'react-hot-toast';
-import { useMutation } from '@apollo/client';
 import messageOperations from '@/src/graphql/operations/message';
+import { useMutation } from '@apollo/client';
+import { Box, Input } from '@chakra-ui/react';
+import ObjectID from 'bson-objectid';
+import { Session } from 'next-auth';
+import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import {
   MessagesResponse,
   SendMessageResponse,
   SendMessageVariables,
 } from '../../../../util/types';
-import ObjectID from 'bson-objectid';
 interface IMessageInputProps {
   session: Session;
   conversationId: string;

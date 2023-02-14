@@ -1,21 +1,11 @@
 import { ConversationPopulated } from '@/../backend/src/util/types';
-import { GoPrimitiveDot } from 'react-icons/go';
-import { MdOutlineModeEditOutline, MdOutlineDeleteOutline } from 'react-icons/md';
-import {
-  Avatar,
-  AvatarGroup,
-  Button,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
-} from '@chakra-ui/react';
 import { formatAvatars, formatConversationName } from '@/src/util/functions';
+import { Avatar, AvatarGroup, Flex, Menu, MenuItem, MenuList, Text } from '@chakra-ui/react';
 import formatRelative from 'date-fns/formatRelative';
 import enUS from 'date-fns/locale/en-US';
 import React, { useState } from 'react';
+import { GoPrimitiveDot } from 'react-icons/go';
+import { MdOutlineDeleteOutline, MdOutlineModeEditOutline } from 'react-icons/md';
 
 /**
  * Format Relative will return a token describing the date

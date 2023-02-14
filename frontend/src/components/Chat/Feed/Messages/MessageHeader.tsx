@@ -1,12 +1,12 @@
 import { ConversationPopulated } from '@/../backend/src/util/types';
+import { MessageHeaderSkeleton } from '@/src/components/Common/SkeletonLoader';
 import { formatAvatars, formatConversationName } from '@/src/util/functions';
 import { ConversationsResponse } from '@/src/util/types';
 import { useQuery } from '@apollo/client';
 import { Avatar, AvatarGroup, Button, Flex, Text } from '@chakra-ui/react';
-import conversationOperations from '../../../../graphql/operations/conversation';
-import { MdArrowBackIosNew } from 'react-icons/md';
 import { useRouter } from 'next/router';
-import { MessageHeaderSkeleton } from '@/src/components/Common/SkeletonLoader';
+import { MdArrowBackIosNew } from 'react-icons/md';
+import conversationOperations from '../../../../graphql/operations/conversation';
 
 interface IMessageHeaderProps {
   userId: string;
