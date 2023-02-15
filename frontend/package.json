@@ -5,10 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "postinstall": "prisma generate --schema=src/prisma/schema.prisma",
-    "migrate": "prisma migrate deploy --schema=src/prisma/schema.prisma",
+    "migrate": "prisma db push --schema=src/prisma/schema.prisma",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start"
   },
   "dependencies": {
     "@apollo/client": "^3.7.7",
