@@ -128,15 +128,15 @@ const ConversationList: React.FC<IConversationListProps> = ({
           sortedConversations.map(c => {
             const participant = c.participants.find(
               (p: ParticipantPopulated) => p.user.id === userId
-            );
+            ) as ParticipantPopulated;
             return (
               <ConversationItem
                 key={c.id}
                 userId={userId}
                 conversation={c}
-                onClick={() => onViewConversation(c.id, participant?.hasSeenLatestMessage || true)}
+                onClick={() => onViewConversation(c.id, participant.hasSeenLatestMessage)}
                 isSelected={router.query.conversationId === c.id}
-                hasSeenLatestMessage={participant?.hasSeenLatestMessage || true}
+                hasSeenLatestMessage={participant.hasSeenLatestMessage}
                 onDeleteConversation={() => onDeleteConversation(c.id)}
                 onEditConversation={() => setEditConversation(c)}
                 onLeaveConversation={() => onLeaveConversation(c)}
