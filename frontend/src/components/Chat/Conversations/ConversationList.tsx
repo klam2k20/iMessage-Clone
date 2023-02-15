@@ -1,4 +1,4 @@
-import { ConversationPopulated, ParticipantPopulated } from '@/../backend/src/util/types';
+import { ConversationPopulated, ParticipantPopulated } from '@/src/util/types';
 import conversationOperations from '@/src/graphql/operations/conversation';
 import {
   DeleteConversationResponse,

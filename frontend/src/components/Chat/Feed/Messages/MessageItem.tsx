@@ -1,4 +1,4 @@
-import { MessagePopulated } from '@/../backend/src/util/types';
+import { MessagePopulated } from '@/src/util/types';
 import { Avatar, Flex, Stack, Text } from '@chakra-ui/react';
 import formatRelative from 'date-fns/formatRelative';
 import enUS from 'date-fns/locale/en-US';

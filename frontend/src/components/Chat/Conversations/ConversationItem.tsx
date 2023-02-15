@@ -1,4 +1,4 @@
-import { ConversationPopulated } from '@/../backend/src/util/types';
+import { ConversationPopulated } from '@/src/util/types';
 import { formatAvatars, formatConversationName } from '@/src/util/functions';
 import { Avatar, AvatarGroup, Flex, Menu, MenuItem, MenuList, Text } from '@chakra-ui/react';
 import formatRelative from 'date-fns/formatRelative';

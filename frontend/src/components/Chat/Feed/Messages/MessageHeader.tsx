@@ -1,4 +1,4 @@
-import { ConversationPopulated } from '@/../backend/src/util/types';
+import { ConversationPopulated } from '@/src/util/types';
 import { MessageHeaderSkeleton } from '@/src/components/Common/SkeletonLoader';
 import { formatAvatars, formatConversationName } from '@/src/util/functions';
 import { ConversationsResponse } from '@/src/util/types';

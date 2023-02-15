@@ -1,4 +1,4 @@
-import { ConversationPopulated, ParticipantPopulated } from '@/../backend/src/util/types';
+import { ConversationPopulated, ParticipantPopulated } from '@/src/util/types';
 import { areParticipantsEqual, findUserParticipant } from '@/src/util/functions';
 import {
   CreateConversationResponse,

@@ -67,6 +67,8 @@ export const conversationPopulated = Prisma.validator<Prisma.ConversationInclude
 
 export type ConversationPopulated = Prisma.ConversationGetPayload<{ include: typeof conversationPopulated; }>
 
+export type ParticipantPopulated = Prisma.ConversationParticipantGetPayload<{ include: typeof participantPopulated; }>
+
 export interface ConversationsResponse {
   conversations: Array<ConversationPopulated>;
 }
