@@ -152,7 +152,7 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
          */
         if (!existingMessages) return;
         const hasLatestMessage = existingMessages.messages.find(
-          m => m.id === conversation.latestMessage.id
+          m => m.id === conversation.latestMessage?.id
         );
 
         if (!hasLatestMessage) {
@@ -161,7 +161,9 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
             variables: { conversationId: conversation.id },
             data: {
               ...existingMessages,
-              messages: [conversation.latestMessage, ...existingMessages.messages],
+              messages: conversation.latestMessage
+                ? [conversation.latestMessage, ...existingMessages.messages]
+                : existingMessages.messages,
             },
           });
         }

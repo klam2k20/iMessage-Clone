@@ -52,10 +52,12 @@ const MessageInput: React.FC<IMessageInputProps> = ({ session, conversationId })
               messages: [
                 {
                   id,
+                  senderId,
                   sender: {
                     id: senderId,
                     username: session.user.username,
                   },
+                  conversationId,
                   body: message,
                   createdAt: new Date(),
                   updatedAt: new Date(),

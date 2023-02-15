@@ -36,7 +36,7 @@ interface IConversationModalProps {
   session: Session;
   isOpen: boolean;
   setIsOpen: (state: boolean) => void;
-  setEditConversation?: (state: ConversationPopulated) => void;
+  setEditConversation?: (state: ConversationPopulated | null) => void;
   conversations: Array<ConversationPopulated>;
   onViewConversation?: (conversationId: string, hasSeenLatestMessage: boolean) => void;
   editConversation?: ConversationPopulated | null;
@@ -76,7 +76,7 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
   >(conversationOperations.Mutations.updateConversationParticipants);
 
   /** Determine if an existing conversation with these participants exist */
-  const findExistingConversation = (participantIds: string[]): ConversationPopulated => {
+  const findExistingConversation = (participantIds: string[]) => {
     const potentialMatchingConversations = conversations.filter(
       c => c.participants.length === participantIds.length
     );
@@ -132,15 +132,17 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
     const participantIds = [userId, ...participants.map(p => p.id)];
     if (findExistingConversation(participantIds)) return;
 
-    try {
-      const participantIds = [...participants.map(p => p.id), userId];
-      await updateConversationParticipants({
-        variables: { conversationId: editConversation.id, participantIds },
-      });
-      onClose();
-    } catch (error: any) {
-      console.log('onUpdateConversation Error', error.message);
-      toast.error(error.message);
+    if (editConversation) {
+      try {
+        const participantIds = [...participants.map(p => p.id), userId];
+        await updateConversationParticipants({
+          variables: { conversationId: editConversation.id, participantIds },
+        });
+        onClose();
+      } catch (error: any) {
+        console.log('onUpdateConversation Error', error.message);
+        toast.error(error.message);
+      }
     }
   };
 
@@ -159,11 +161,13 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
    * redirect the user to the existing conversation
    */
   const onExistingConversation = () => {
-    const userParticipant = findUserParticipant(userId, existingConversation.participants);
-    if (userParticipant) {
-      onClose();
-      if (onViewConversation)
-        onViewConversation(existingConversation.id, userParticipant.hasSeenLatestMessage);
+    if (existingConversation) {
+      const userParticipant = findUserParticipant(userId, existingConversation.participants);
+      if (userParticipant) {
+        onClose();
+        if (onViewConversation)
+          onViewConversation(existingConversation.id, userParticipant.hasSeenLatestMessage);
+      }
     }
   };
 

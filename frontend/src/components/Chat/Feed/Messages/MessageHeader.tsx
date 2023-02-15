@@ -45,11 +45,11 @@ const MessageHeader: React.FC<IMessageHeaderProps> = ({ userId, conversationId }
 
           <Flex flexDirection="column" h="100%" w="100%" align="center">
             {conversation.participants.length == 2 ? (
-              <Avatar src="" name={formatAvatars(userId, conversation.participants)[0]} />
+              <Avatar src="" name={formatAvatars(userId, conversation.participants)[0] || ''} />
             ) : (
               <AvatarGroup size="md" max={2}>
                 {formatAvatars(userId, conversation.participants).map(username => (
-                  <Avatar key={username} src="" name={username} />
+                  <Avatar key={username} src="" name={username || ''} />
                 ))}
               </AvatarGroup>
             )}
