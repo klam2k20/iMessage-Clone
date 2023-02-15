@@ -1,6 +1,8 @@
 import { Flex, Text } from '@chakra-ui/react';
 import { Session } from 'next-auth';
 import { useRouter } from 'next/router';
+import { BiMessageSquareDots } from 'react-icons/bi';
+import FeedStart from './FeedStart';
 import MessageHeader from './Messages/MessageHeader';
 import MessageInput from './Messages/MessageInput';
 import Messages from './Messages/Messages';
@@ -29,7 +31,7 @@ const FeedWrapper: React.FC<IFeedWrapperProps> = ({ session }) => {
           <MessageInput session={session} conversationId={conversationId as string} />
         </>
       ) : (
-        <Text>No Conversation Selected</Text>
+        <FeedStart session={session} />
       )}
     </Flex>
   );

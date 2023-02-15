@@ -36,10 +36,10 @@ interface IConversationModalProps {
   session: Session;
   isOpen: boolean;
   setIsOpen: (state: boolean) => void;
-  setEditConversation: (state: ConversationPopulated) => void;
+  setEditConversation?: (state: ConversationPopulated) => void;
   conversations: Array<ConversationPopulated>;
-  onViewConversation: (conversationId: string, hasSeenLatestMessage: boolean) => void;
-  editConversation: ConversationPopulated | null;
+  onViewConversation?: (conversationId: string, hasSeenLatestMessage: boolean) => void;
+  editConversation?: ConversationPopulated | null;
 }
 
 const ConversationModal: React.FC<IConversationModalProps> = ({
@@ -79,7 +79,7 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
     setUsername('');
     setParticipants([]);
     setExistingConversation(null);
-    setEditConversation(null);
+    if (setEditConversation) setEditConversation(null);
   };
 
   const onSearch = (e: FormEvent) => {
