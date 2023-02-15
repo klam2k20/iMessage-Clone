@@ -270,8 +270,7 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
       minW={{ base: '100%', md: '400px' }}
       maxW={{ base: '100%', md: '400px' }}
       bg="whiteAlpha.50"
-      py={8}
-      px={4}>
+      p={4}>
       <ConversationList
         session={session}
         conversations={conversationData?.conversations || []}

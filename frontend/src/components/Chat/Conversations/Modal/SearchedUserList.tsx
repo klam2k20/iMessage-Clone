@@ -19,7 +19,16 @@ const SearchedUserList: React.FunctionComponent<ISearchedUserListProps> = ({
           No Users Found
         </Text>
       ) : (
-        <Stack mt={4} spacing={4}>
+        <Stack
+          mt={4}
+          spacing={4}
+          maxH={{ base: '100vh', md: '30vh' }}
+          overflowY="scroll"
+          sx={{
+            '::-webkit-scrollbar': {
+              display: 'none',
+            },
+          }}>
           {users.map(user => (
             <Flex
               key={user.id}

@@ -9,17 +9,9 @@ interface IParticipantListProps {
 
 const ParticipantList: React.FC<IParticipantListProps> = ({ participants, removeParticipant }) => {
   return (
-    <Flex gap={4} mt={4}>
+    <Flex gap={5} mt={4} wrap="wrap">
       {participants.map(p => (
-        <Flex
-          key={p.id}
-          align="center"
-          bg="whiteAlpha.200"
-          borderRadius="md"
-          py={1}
-          px={2}
-          wrap="wrap"
-          gap={2}>
+        <Flex key={p.id} align="center" bg="whiteAlpha.200" borderRadius="md" py={1} px={2} gap={2}>
           <Text>{p.username}</Text>
           <IoIosCloseCircleOutline
             size={20}

@@ -39,18 +39,20 @@ const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
     <Center h="100vh">
       <Stack align="center" spacing="1rem">
         {session ? (
-          <>
-            <Text fontSize="3xl">Create Username</Text>
-            <Input
-              type="text"
-              placeholder="Username..."
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-            />
-            <Button w="100%" onClick={onSubmit} isLoading={loading}>
-              Save
-            </Button>
-          </>
+          <form onSubmit={onSubmit}>
+            <Stack align="center" spacing="1rem">
+              <Text fontSize="3xl">Create Username</Text>
+              <Input
+                type="text"
+                placeholder="Username..."
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+              />
+              <Button w="100%" type="submit" isLoading={loading}>
+                Save
+              </Button>
+            </Stack>
+          </form>
         ) : (
           <>
             <Text fontSize="3xl">iMessage</Text>

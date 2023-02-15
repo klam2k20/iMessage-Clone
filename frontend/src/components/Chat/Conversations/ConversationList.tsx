@@ -88,9 +88,13 @@ const ConversationList: React.FC<IConversationListProps> = ({
     }
   };
 
+  const logout = () => {
+    signOut({ callbackUrl: `${window.location.origin}` });
+  };
+
   return (
-    <Box w="100%">
-      <Box bg="blackAlpha.300" py={2} px={4} borderRadius="md" cursor="pointer" mb={4}>
+    <Box w="100%" h="100%" position="relative" overflow="hidden">
+      <Box bg="blackAlpha.300" py={2} px={4} borderRadius="md" cursor="pointer">
         <Text textAlign="center" color="whiteAlpha.800" fontWeight={500} onClick={onOpen}>
           Find or Start a Conversation
         </Text>
@@ -104,7 +108,15 @@ const ConversationList: React.FC<IConversationListProps> = ({
         onViewConversation={onViewConversation}
         editConversation={editConversation}
       />
-      <Box h="90%" my={4}>
+      <Box
+        h="90%"
+        my={4}
+        overflowY="scroll"
+        sx={{
+          '::-webkit-scrollbar': {
+            display: 'none',
+          },
+        }}>
         {loading ? (
           <ConversationsSkeleton />
         ) : (
@@ -128,7 +140,14 @@ const ConversationList: React.FC<IConversationListProps> = ({
           })
         )}
       </Box>
-      <Button w="100%" onClick={() => signOut()}>
+      <Button
+        w="100%"
+        bg="#1f1f1f"
+        _hover={{ bg: '#1f1f1f' }}
+        position="absolute"
+        bottom={2}
+        zIndex={1}
+        onClick={logout}>
         Logout
       </Button>
     </Box>
