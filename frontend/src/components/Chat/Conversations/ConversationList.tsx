@@ -93,7 +93,7 @@ const ConversationList: React.FC<IConversationListProps> = ({
   };
 
   return (
-    <Box w="100%" h="100%" position="relative" overflow="hidden">
+    <Box w="100%" h="100%" position="relative">
       <Box bg="blackAlpha.300" py={2} px={4} borderRadius="md" cursor="pointer">
         <Text textAlign="center" color="whiteAlpha.800" fontWeight={500} onClick={onOpen}>
           Find or Start a Conversation
