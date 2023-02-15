@@ -134,9 +134,9 @@ const ConversationList: React.FC<IConversationListProps> = ({
                 key={c.id}
                 userId={userId}
                 conversation={c}
-                onClick={() => onViewConversation(c.id, c.hasSeenLatestMessage)}
+                onClick={() => onViewConversation(c.id, participant?.hasSeenLatestMessage || true)}
                 isSelected={router.query.conversationId === c.id}
-                hasSeenLatestMessage={participant.hasSeenLatestMessage}
+                hasSeenLatestMessage={participant?.hasSeenLatestMessage || true}
                 onDeleteConversation={() => onDeleteConversation(c.id)}
                 onEditConversation={() => setEditConversation(c)}
                 onLeaveConversation={() => onLeaveConversation(c)}
