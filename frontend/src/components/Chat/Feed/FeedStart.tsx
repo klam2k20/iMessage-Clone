@@ -27,7 +27,9 @@ const FeedStart: React.FC<IFeedStartProps> = ({ session }) => {
   return (
     <Flex flexDirection="column" h="100%" align="center" justify="center" gap={2}>
       {hasConversations > 0 && <BiMessageSquareDots fontSize={90} />}
-      <Text fontSize={40}>{action}</Text>
+      <Text textAlign="center" fontSize={40}>
+        {action}
+      </Text>
       {hasConversations == 0 && (
         <Button bg="brand.100" onClick={onOpen}>
           Start A Conversation!
