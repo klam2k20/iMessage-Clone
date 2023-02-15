@@ -29,13 +29,20 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
   } = session;
   const { conversationId } = router.query;
 
+  /** Queries */
   const {
     data: conversationData,
     loading,
-    error,
     subscribeToMore,
   } = useQuery<ConversationsResponse>(conversationOperations.Queries.conversations);
 
+  /** Mutations */
+  const [markConversationAsRead] = useMutation<
+    MarkConversationAsReadResponse,
+    MarkConversationAsReadVariables
+  >(conversationOperations.Mutations.markConversationAsRead);
+
+  /** Subscriptions */
   const subscribeToNewConversation = () =>
     subscribeToMore({
       document: conversationOperations.Subscriptions.conversationCreated,
@@ -47,12 +54,6 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
         });
       },
     });
-  const [
-    markConversationAsRead,
-    { data, loading: markConversationAsReadLoading, error: markConversationAsReadError },
-  ] = useMutation<MarkConversationAsReadResponse, MarkConversationAsReadVariables>(
-    conversationOperations.Mutations.markConversationAsRead
-  );
 
   useSubscription<ConversationUpdatedSubscriptionResponse>(
     conversationOperations.Subscriptions.conversationUpdated,
@@ -65,16 +66,12 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
         const { data: subscriptionData } = data;
         if (!subscriptionData) return;
 
-        /**
-         * Update hasSeenLatestMessage to true if the conversation
-         * updated is the conversation selected. The backend automatically
-         * sets hasSeenLatestMessage to false when sending a new message
-         */
         const {
           conversationUpdated: { conversation, addedParticipantIds, deletedParticipantIds },
         } = subscriptionData;
         const isSelectedConversation = conversation.id === conversationId;
 
+        /** Update conversation query to include new conversation */
         if (
           addedParticipantIds &&
           addedParticipantIds.length &&
@@ -94,6 +91,7 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
           return;
         }
 
+        /** Update conversation query to remove conversation  */
         if (
           deletedParticipantIds &&
           deletedParticipantIds.length &&
@@ -118,6 +116,11 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
           return;
         }
 
+        /**
+         * Update hasSeenLatestMessage to true if the conversation
+         * updated is the conversation selected. The backend automatically
+         * sets hasSeenLatestMessage to false when sending a new message
+         */
         if (isSelectedConversation) {
           onViewConversation(conversationId as string, false);
           return;
@@ -192,6 +195,12 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
     }
   );
 
+  /**
+   * Redirect user to selected conversation
+   * @param conversationId selected conversation
+   * @param hasSeenLatestMessage whether the latest message in the selected conversation has
+   * been seen
+   */
   const onViewConversation = async (conversationId: string, hasSeenLatestMessage: boolean) => {
     router.push({ query: { conversationId } });
 

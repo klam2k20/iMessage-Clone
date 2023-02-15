@@ -15,7 +15,9 @@ interface IAuthProps {
 
 const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
   const [username, setUsername] = useState('');
-  const [createUsername, { loading, error }] = useMutation<
+
+  /** Mutation */
+  const [createUsername, { loading }] = useMutation<
     CreateUsernameResponse,
     CreateUsernameVariables
   >(userOperations.Mutations.createUsername);

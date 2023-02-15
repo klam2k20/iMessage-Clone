@@ -17,10 +17,17 @@ interface IMessageInputProps {
 
 const MessageInput: React.FC<IMessageInputProps> = ({ session, conversationId }) => {
   const [message, setMessage] = useState('');
-  const [sendMessage, { loading }] = useMutation<SendMessageResponse, SendMessageVariables>(
+
+  /** Mutations */
+  const [sendMessage] = useMutation<SendMessageResponse, SendMessageVariables>(
     messageOperations.Mutations.sendMessage
   );
 
+  /**
+   * Send message and update messages query to include
+   * latest message
+   * @param e
+   */
   const onSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     try {

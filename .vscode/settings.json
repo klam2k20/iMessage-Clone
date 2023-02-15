@@ -17,6 +17,7 @@
   "prettier.tabWidth": 2,
   "prettier.arrowParens": "avoid",
   "prettier.singleQuote": true,
+  "prettier.printWidth": 100,
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
   }

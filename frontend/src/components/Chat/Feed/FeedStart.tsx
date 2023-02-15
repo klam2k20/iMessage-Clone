@@ -15,6 +15,7 @@ const FeedStart: React.FC<IFeedStartProps> = ({ session }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const onOpen = () => setIsOpen(true);
 
+  /** Queries */
   const { data, loading, error, subscribeToMore } = useQuery<ConversationsResponse>(
     conversationOperations.Queries.conversations
   );

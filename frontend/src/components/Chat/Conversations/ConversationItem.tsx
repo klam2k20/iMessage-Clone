@@ -45,6 +45,11 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
   const [menuOpen, setMenuOpen] = useState(false);
   const formatAvatar = formatAvatars(userId, conversation.participants);
 
+  /**
+   * Handle opening the context menu
+   * or redirect the user to the selected
+   * conversation
+   */
   const handleClick = (e: React.MouseEvent) => {
     if (e.type === 'click') onClick();
     else if (e.type === 'contextmenu') {
@@ -53,12 +58,12 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
     }
   };
 
+  /**
+   * Stop propagation prevents the onClick event
+   * from propogating upward to any parent's who
+   * may also have an onClick event
+   */
   const handleDelete = (e: React.MouseEvent) => {
-    /**
-     * Stop propagation prevents the onClick event
-     * from propogating upward to the parent flex
-     * which also has a onClick event
-     */
     e.stopPropagation();
     onDeleteConversation();
   };

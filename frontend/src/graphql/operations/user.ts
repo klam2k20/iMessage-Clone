@@ -11,6 +11,7 @@ const userOperations = {
     }
     `,
   },
+
   Mutations: {
     createUsername: gql`
       mutation createUsername($username: String!) {
@@ -21,6 +22,7 @@ const userOperations = {
       }
     `,
   },
+
   Subscriptions: {}
 }
 

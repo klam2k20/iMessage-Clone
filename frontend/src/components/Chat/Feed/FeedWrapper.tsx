@@ -17,6 +17,7 @@ const FeedWrapper: React.FC<IFeedWrapperProps> = ({ session }) => {
   const {
     user: { id: userId },
   } = session;
+
   return (
     <Flex
       display={{ base: conversationId ? 'flex' : 'none', md: 'flex' }}

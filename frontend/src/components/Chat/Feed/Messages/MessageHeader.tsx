@@ -14,13 +14,16 @@ interface IMessageHeaderProps {
 }
 
 const MessageHeader: React.FC<IMessageHeaderProps> = ({ userId, conversationId }) => {
-  const { data, loading, error } = useQuery<ConversationsResponse>(
+  const router = useRouter();
+
+  /** Queries */
+  const { data, loading } = useQuery<ConversationsResponse>(
     conversationOperations.Queries.conversations
   );
+
   const conversation = data?.conversations.find(
     c => c.id === conversationId
   ) as ConversationPopulated;
-  const router = useRouter();
 
   return (
     <>

@@ -30,18 +30,15 @@ const ConversationList: React.FC<IConversationListProps> = ({
   onViewConversation,
   loading,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [editConversation, setEditConversation] = useState<ConversationPopulated | null>();
-  const onOpen = () => setIsOpen(true);
   const {
     user: { id: userId },
   } = session;
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const [editConversation, setEditConversation] = useState<ConversationPopulated | null>();
+  const onOpen = () => setIsOpen(true);
 
-  const sortedConversations = [...conversations].sort(
-    (a, b) => new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf()
-  );
-
+  /** Mutations */
   const [deleteConversation] = useMutation<DeleteConversationResponse, DeleteConversationVariables>(
     conversationOperations.Mutations.deleteConversation
   );
@@ -51,6 +48,12 @@ const ConversationList: React.FC<IConversationListProps> = ({
     UpdateConversationParticipantsVariables
   >(conversationOperations.Mutations.updateConversationParticipants);
 
+  /** Sort conversation in descending updatedAt order */
+  const sortedConversations = [...conversations].sort(
+    (a, b) => new Date(b.updatedAt).valueOf() - new Date(a.updatedAt).valueOf()
+  );
+
+  /** Handle user leaving a conversation */
   const onLeaveConversation = async (conversation: ConversationPopulated) => {
     const filteredParticipantIds = conversation.participants
       .filter(p => p.user.id !== userId)
@@ -68,6 +71,7 @@ const ConversationList: React.FC<IConversationListProps> = ({
     }
   };
 
+  /** Handle user deleting a conversation */
   const onDeleteConversation = (conversationId: string) => {
     try {
       toast.promise(
@@ -88,6 +92,7 @@ const ConversationList: React.FC<IConversationListProps> = ({
     }
   };
 
+  /** Logout and redirect user to origin */
   const logout = () => {
     signOut({ callbackUrl: `${window.location.origin}` });
   };

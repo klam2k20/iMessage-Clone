@@ -14,7 +14,8 @@ interface IMessagesProps {
 }
 
 const Messages: React.FC<IMessagesProps> = ({ userId, conversationId }) => {
-  const { data, loading, error, subscribeToMore } = useQuery<MessagesResponse, MessagesVariables>(
+  /** Queries */
+  const { data, loading, subscribeToMore } = useQuery<MessagesResponse, MessagesVariables>(
     messageOperations.Queries.messages,
     {
       variables: {
@@ -26,6 +27,7 @@ const Messages: React.FC<IMessagesProps> = ({ userId, conversationId }) => {
     }
   );
 
+  /** Subscriptions */
   const subscribeToNewMessages = (conversationId: string) =>
     subscribeToMore({
       document: messageOperations.Subscriptions.messageSent,

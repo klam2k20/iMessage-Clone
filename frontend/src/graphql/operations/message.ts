@@ -20,6 +20,7 @@ const messageOperations = {
       }
     `,
   },
+
   Mutations: {
     sendMessage: gql`
       mutation sendMessage($id: String!, $senderId: String!, $conversationId: String!, $body: String!) {
@@ -27,6 +28,7 @@ const messageOperations = {
       }
     `,
   },
+
   Subscriptions: {
     messageSent: gql`
       subscription messageSent($conversationId: String!) {

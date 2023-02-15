@@ -51,29 +51,48 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
   onViewConversation,
   editConversation,
 }) => {
-  const [username, setUsername] = useState('');
-  const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
-  const [existingConversation, setExistingConversation] = useState<ConversationPopulated | null>();
-  let [searchUser, { data, loading, error }] = useLazyQuery<
-    SearchUserResponse,
-    SearchUserVariables
-  >(userOperations.Queries.searchUsers);
-  const [createConversation, { loading: createConversationLoading }] = useMutation<
-    CreateConversationResponse,
-    CreateConversationVariables
-  >(conversationOperations.Mutations.createConversation);
-  const [updateConversationParticipants] = useMutation<
-    UpdateConversationParticipantsResponse,
-    UpdateConversationParticipantsVariables
-  >(conversationOperations.Mutations.updateConversationParticipants);
   const router = useRouter();
   const {
     user: { id: userId },
   } = session;
+  const [username, setUsername] = useState('');
+  const [participants, setParticipants] = useState<Array<SearchedUser>>([]);
+  const [existingConversation, setExistingConversation] = useState<ConversationPopulated | null>();
 
-  /**
-   * Clear conversation modal
-   */
+  /** Queries */
+  let [searchUser, { data, loading }] = useLazyQuery<SearchUserResponse, SearchUserVariables>(
+    userOperations.Queries.searchUsers
+  );
+
+  /** Mutation */
+  const [createConversation, { loading: createConversationLoading }] = useMutation<
+    CreateConversationResponse,
+    CreateConversationVariables
+  >(conversationOperations.Mutations.createConversation);
+
+  const [updateConversationParticipants, { loading: updateConversationLoading }] = useMutation<
+    UpdateConversationParticipantsResponse,
+    UpdateConversationParticipantsVariables
+  >(conversationOperations.Mutations.updateConversationParticipants);
+
+  /** Determine if an existing conversation with these participants exist */
+  const findExistingConversation = (participantIds: string[]): ConversationPopulated => {
+    const potentialMatchingConversations = conversations.filter(
+      c => c.participants.length === participantIds.length
+    );
+
+    const conversation = potentialMatchingConversations.find(c =>
+      c.participants.reduce(
+        (acc: boolean, p: ParticipantPopulated) => acc && participantIds.includes(p.user.id),
+        true
+      )
+    );
+
+    if (conversation) setExistingConversation(conversation);
+    return conversation;
+  };
+
+  /** Reset conversation modal*/
   const onClose = () => {
     setIsOpen(false);
     setUsername('');
@@ -90,20 +109,17 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
   const onCreateConversation = async () => {
     if (participants.length >= 1) {
       const participantIds = [userId, ...participants.map(p => p.id)];
-
       if (findExistingConversation(participantIds)) return;
+
       try {
         const { data: conversation } = await createConversation({
           variables: { participants: participantIds },
         });
-
         if (!conversation?.createConversation) throw new Error('Error Creating Conversation');
-
         const {
           createConversation: { conversationId },
         } = conversation;
         router.push({ query: { conversationId } });
-
         onClose();
       } catch (error: any) {
         console.log('onCreateConversation Error', error.message);
@@ -115,31 +131,17 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
   const onUpdateConversation = async () => {
     const participantIds = [userId, ...participants.map(p => p.id)];
     if (findExistingConversation(participantIds)) return;
+
     try {
       const participantIds = [...participants.map(p => p.id), userId];
       await updateConversationParticipants({
         variables: { conversationId: editConversation.id, participantIds },
       });
-
       onClose();
     } catch (error: any) {
       console.log('onUpdateConversation Error', error.message);
       toast.error(error.message);
     }
-  };
-
-  const findExistingConversation = (participantIds: string[]): ConversationPopulated => {
-    const potentialMatchingConversations = conversations.filter(
-      c => c.participants.length === participantIds.length
-    );
-    const conversation = potentialMatchingConversations.find(c =>
-      c.participants.reduce(
-        (acc: boolean, p: ParticipantPopulated) => acc && participantIds.includes(p.user.id),
-        true
-      )
-    );
-    if (conversation) setExistingConversation(conversation);
-    return conversation;
   };
 
   const addParticipant = (user: SearchedUser) => {
@@ -151,14 +153,27 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
     setParticipants(pre => pre.filter(p => p.id !== userId));
   };
 
+  /**
+   * If a conversation with the listed participants exist
+   * display a conversation item that when clicked will
+   * redirect the user to the existing conversation
+   */
   const onExistingConversation = () => {
     const userParticipant = findUserParticipant(userId, existingConversation.participants);
     if (userParticipant) {
       onClose();
-      onViewConversation(existingConversation.id, userParticipant.hasSeenLatestMessage);
+      if (onViewConversation)
+        onViewConversation(existingConversation.id, userParticipant.hasSeenLatestMessage);
     }
   };
 
+  /**
+   * When participants are added or removed check
+   * that the conversation that we are editing (if any)
+   * participants don't match the currently selected
+   * participants. If it does update existing conversation
+   * to the current conversation else set it to null
+   */
   useEffect(() => {
     const isEqual = areParticipantsEqual(
       [userId, ...participants.map(p => p.id)],
@@ -170,6 +185,10 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
     }
   }, [participants]);
 
+  /**
+   * If we are editing a conversation update the modal's
+   * participants
+   */
   useEffect(() => {
     if (editConversation) {
       const conversationParticipants = editConversation.participants
@@ -232,7 +251,7 @@ const ConversationModal: React.FC<IConversationModalProps> = ({
               _hover={{ bg: 'brand.100' }}
               onClick={editConversation ? onUpdateConversation : onCreateConversation}
               isDisabled={!!existingConversation || participants.length == 0}
-              isLoading={createConversationLoading}>
+              isLoading={editConversation ? updateConversationLoading : createConversationLoading}>
               {editConversation ? 'Update Conversation' : 'Create Conversation'}
             </Button>
           </ModalBody>
