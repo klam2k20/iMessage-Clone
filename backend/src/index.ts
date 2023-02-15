@@ -16,7 +16,6 @@ import resolvers from './graphql/resolvers';
 import typeDefs from './graphql/typeDefs';
 import { GraphQLContext, Session, SubscriptionContext } from './util/types';
 
-
 /**
  * A GraphQL schema defines the entity types - a description of the data
  * clients can request from a GraphQL API and operation types - the 
@@ -88,7 +87,8 @@ async function startApolloServer() {
       context: async ({ req }): Promise<GraphQLContext> => {
         /**
          * Create a context that contains the current session
-         * info and the prisma client to interact with the DB
+         * info, the prisma client to interact with the DB
+         * and a pubsub class to publish and subscribe to events
          */
         const session = await getSession({ req }) as Session;
         return { session, prisma, pubsub };

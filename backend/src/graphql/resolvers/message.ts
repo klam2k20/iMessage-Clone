@@ -10,7 +10,6 @@ const resolvers = {
     messages: async (_: any, args: { conversationId: string }, context: GraphQLContext): Promise<Array<MessagePopulated>> => {
       const { session, prisma } = context;
       const { conversationId } = args;
-
       if (!session?.user) throw new GraphQLError('Unauthorized');
       const { user: { id: userId } } = session;
 
@@ -42,6 +41,7 @@ const resolvers = {
             createdAt: 'desc'
           },
         });
+
         return messages;
       } catch (error: any) {
         console.log('messages Error', error.message);
@@ -54,9 +54,7 @@ const resolvers = {
     sendMessage: async (_: any, args: { id: string, senderId: string, conversationId: string, body: string }, context: GraphQLContext): Promise<boolean> => {
       const { session, prisma, pubsub } = context;
       const { id, senderId, conversationId, body } = args;
-
       if (!session?.user || session.user.id !== senderId) throw new GraphQLError("Unauthorized");
-
       const { user: { id: userId } } = session;
 
       try {
@@ -175,7 +173,6 @@ const resolvers = {
           return payload.messageSent.conversationId === args.conversationId;
         }
       )
-
     },
   },
 }

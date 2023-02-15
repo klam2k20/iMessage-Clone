@@ -20,6 +20,7 @@ const resolvers = {
             }
           }
         });
+
         return users;
       } catch (error: any) {
         console.log('searchUser Error', error.message);
@@ -27,6 +28,7 @@ const resolvers = {
       }
     },
   },
+
   Mutation: {
     createUsername: async (_: any, args: { username: string }, context: GraphQLContext): Promise<CreateUsernameResponse> => {
       const { username } = args;
@@ -49,6 +51,7 @@ const resolvers = {
             username
           },
         });
+
         return { success: true };
       } catch (error: any) {
         console.log('createUsername Error', error.message);

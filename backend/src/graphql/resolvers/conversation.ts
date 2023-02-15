@@ -217,6 +217,7 @@ const resolvers = {
             deletedParticipantIds
           }
         });
+
         return true;
       } catch (error: any) {
         console.log('updateConversation Error', error.message);
@@ -250,7 +251,6 @@ const resolvers = {
         }
       )
     },
-
     conversationUpdated: {
       subscribe: withFilter(
         (_: any, __: any, context: GraphQLContext) => {
@@ -268,7 +268,6 @@ const resolvers = {
         }
       )
     },
-
     conversationDeleted: {
       subscribe: withFilter(
         (_: any, __: any, context: GraphQLContext) => {
