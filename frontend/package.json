@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "postinstall": "npx prisma generate --schema=src/prisma/schema.prisma",
-    "migrate": "npx prisma db push --schema=src/prisma/schema.prisma",
+    "postinstall": "prisma generate --schema=src/prisma/schema.prisma",
+    "migrate": "prisma db push --schema=src/prisma/schema.prisma",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint --dir src"
   },
   "dependencies": {
     "@apollo/client": "^3.7.7",
