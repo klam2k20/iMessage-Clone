@@ -8,7 +8,7 @@
     "migrate": "prisma db push --schema=src/prisma/schema.prisma",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint --dir src"
+    "lint": "next lint"
   },
   "dependencies": {
     "@apollo/client": "^3.7.7",
