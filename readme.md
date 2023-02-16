@@ -4,9 +4,9 @@
 
 ## Overview
 
-This is a responsive iMessage clone created with NextJS, MongoDB, and Apollo Client and
-Server. The application supports real-time messaging in individual and group settings,
-real-time notifications, and allows users to remove and/or add participants into conversations.
+This is a responsive iMessage clone. The application supports real-time messaging in individual
+and group settings, real-time notifications, allows users to remove and/or add participants into conversations,
+and delete and/or leave conversations.
 
 ## Technology
 
