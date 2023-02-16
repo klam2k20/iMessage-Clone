@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.j s",
   "scripts": {
+    "start": "node src/index",
     "dev": "nodemon src/index.ts"
   },
   "keywords": [],
