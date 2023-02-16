@@ -18,7 +18,7 @@ const httpLink = new HttpLink({
  * validate that the app is in the browser and not the NextJs socket
  */
 const wsLink = typeof window !== "undefined" ? new GraphQLWsLink(createClient({
-  url: 'ws://imessage-clone-production.up.railway.app/subscriptions',
+  url: 'wss://imessage-clone-production.up.railway.app/subscriptions',
   connectionParams: async () => ({
     session: await getSession()
   }),
