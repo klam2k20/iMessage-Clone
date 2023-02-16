@@ -17,17 +17,17 @@ real-time notifications, and allows users to remove and/or add participants into
 
 - Group Conversations
 <p align="center">
-    <img src="imgs/group-conversation.gif">
+    <img src="imgs/group-conversation.gif" height="400">
 </p>
 
 - Edit Group Conversation Participants
 <p align="center">
-    <img src="imgs/edit-conversation.gif">
+    <img src="imgs/edit-conversation.gif" height="400">
 </p>
 
 - Leave Group Conversation and Delete Conversation
 <p align="center">
-    <img src="imgs/delete-conversation.gif">
+    <img src="imgs/delete-conversation.gif" height="400">
 </p>
 
 - Real-time Notifications
