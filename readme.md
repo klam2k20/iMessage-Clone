@@ -15,6 +15,11 @@ real-time notifications, and allows users to remove and/or add participants into
     <img src="imgs/responsive.gif" height="400">
 </p>
 
+- Authenication with NextAuth
+<p align="center">
+    <img src="imgs/next-auth.gif" height="400">
+</p>
+
 - Group Conversations
 <p align="center">
     <img src="imgs/group-conversation.gif" height="400">
