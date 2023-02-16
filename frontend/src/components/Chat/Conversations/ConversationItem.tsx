@@ -1,4 +1,4 @@
-import { ConversationPopulated } from '@/../backend/src/util/types';
+import { ConversationPopulated } from '@/src/util/types';
 import { formatAvatars, formatConversationName } from '@/src/util/functions';
 import { Avatar, AvatarGroup, Flex, Menu, MenuItem, MenuList, Text } from '@chakra-ui/react';
 import formatRelative from 'date-fns/formatRelative';
@@ -123,11 +123,11 @@ const ConversationItem: React.FC<IConversationItemProps> = ({
       {hasSeenLatestMessage === false && <GoPrimitiveDot fontSize={16} color="#1982FC" />}
       <Flex flex={1} justify="center">
         {conversation.participants.length == 2 ? (
-          <Avatar src="" name={formatAvatar[0]} />
+          <Avatar src="" name={formatAvatar[0] || ''} />
         ) : (
           <AvatarGroup size="sm">
-            <Avatar src="" name={formatAvatar[0]} />
-            <Avatar src="" name={formatAvatar[1]} />
+            <Avatar src="" name={formatAvatar[0] || ''} />
+            <Avatar src="" name={formatAvatar[1] || ''} />
           </AvatarGroup>
         )}
       </Flex>
