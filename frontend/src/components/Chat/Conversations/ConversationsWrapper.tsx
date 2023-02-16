@@ -177,7 +177,7 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
         if (!subscriptionData) return;
 
         const {
-          conversationDeleted: { id: conversationId },
+          conversationDeleted: { id: conversationDeletedId },
         } = subscriptionData;
 
         const existingConversations = client.readQuery<ConversationsResponse>({
@@ -188,9 +188,10 @@ const ConversationWrapper: React.FC<IConversationWrapperProps> = ({ session }) =
         client.writeQuery<ConversationsResponse>({
           query: conversationOperations.Queries.conversations,
           data: {
-            conversations: conversations.filter(c => c.id !== conversationId),
+            conversations: conversations.filter(c => c.id !== conversationDeletedId),
           },
         });
+        if (conversationDeletedId === conversationId) router.push('/');
       },
     }
   );
