@@ -10,7 +10,7 @@ import express from 'express';
 import { PubSub } from 'graphql-subscriptions';
 import { useServer } from 'graphql-ws/lib/use/ws';
 import { createServer } from 'http';
-import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next"
 import { WebSocketServer } from 'ws';
 import resolvers from './graphql/resolvers';
 import typeDefs from './graphql/typeDefs';
@@ -90,7 +90,7 @@ async function startApolloServer() {
          * info, the prisma client to interact with the DB
          * and a pubsub class to publish and subscribe to events
          */
-        const session = await getSession({ req }) as Session;
+        const session = await getServerSession(req) as Session;
         return { session, prisma, pubsub };
       },
     }),
