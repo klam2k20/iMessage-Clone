@@ -8,6 +8,15 @@ This is a responsive iMessage clone created with NextJS, MongoDB, and Apollo Cli
 Server. The application supports real-time messaging in individual and group settings,
 real-time notifications, and allows users to remove and/or add participants into conversations.
 
+## Technology
+
+- <img src="https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white">
+- <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white">
+- <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white">
+- <img src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white">
+- <img src="https://img.shields.io/badge/Apollo%20GraphQL-311C87?&style=for-the-badge&logo=Apollo%20GraphQL&logoColor=white">
+- <img src="https://img.shields.io/badge/Chakra--UI-319795?style=for-the-badge&logo=chakra-ui&logoColor=white">
+
 ## Features
 
 - Responsive Design
@@ -48,30 +57,33 @@ real-time notifications, and allows users to remove and/or add participants into
 - Sign up for MongoDB Atlas
   - Create a shared database
 
-### Installation
+### Backend Installation
 
-1. Clone the repo
-   ```sh
-   git clone https://github.com/klam2k20/iMessage-Clone.git
-   ```
-2. `cd iMessage-Clone/server`
-3. Create `config.env` with your MongoDB URI
-   ```sh
-   PORT=4000
-   MONG0DB_URI=<MONGODBURI>
-   CLIENT_ORIGN=http://localhost:3000
-   ```
-4. Install npm packages
-   ```sh
-   npm install
-   ```
-5. Start backend
-   ```sh
-   npm run dev
-   ```
-6. `cd ../frontend`
-7. Install npm packages
-8. Start frontend on port 3000
-   ```sh
-   yarn start
-   ```
+```sh
+# Clone the repo
+git clone https://github.com/klam2k20/iMessage-Clone.git
+
+# Create config.env
+cd iMessage-Clone/server
+PORT=4000
+MONG0DB_URI=<MONGODBURI>
+CLIENT_ORIGN=http://localhost:3000
+
+# Install dependencies
+npm install
+
+# Start the server
+npm run dev
+```
+
+# Frontend Installation
+
+```sh
+cd ../frontend
+
+# Install dependencies
+npm install
+
+# Start the application
+npm run dev
+```
