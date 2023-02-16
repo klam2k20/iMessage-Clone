@@ -39,7 +39,7 @@ async function startApolloServer() {
   // Creating the WebSocket server
   const wsServer = new WebSocketServer({
     server: httpServer,
-    path: '/subscriptions',
+    path: '/graphql/subscriptions',
   });
 
   // WebSocketServer start listening.
@@ -80,7 +80,7 @@ async function startApolloServer() {
   }
   await server.start();
   app.use(
-    '/',
+    '/graphql',
     cors<cors.CorsRequest>(corsOption),
     json(),
     expressMiddleware(server, {
@@ -90,7 +90,7 @@ async function startApolloServer() {
          * info, the prisma client to interact with the DB
          * and a pubsub class to publish and subscribe to events
          */
-        const session = await getServerSession(req) as Session;
+        const session = await getServerSession(req) as Session
         return { session, prisma, pubsub };
       },
     }),

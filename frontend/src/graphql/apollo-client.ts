@@ -8,7 +8,7 @@ import { getSession } from 'next-auth/react';
  * Http Link will be sent all queries and mutations
  */
 const httpLink = new HttpLink({
-  uri: 'https://imessage-clone-production.up.railway.app/',
+  uri: 'https://imessage-clone-production.up.railway.app/graphql',
   credentials: "include",
 });
 
@@ -18,7 +18,7 @@ const httpLink = new HttpLink({
  * validate that the app is in the browser and not the NextJs socket
  */
 const wsLink = typeof window !== "undefined" ? new GraphQLWsLink(createClient({
-  url: 'wss://imessage-clone-production.up.railway.app/subscriptions',
+  url: 'wss://imessage-clone-production.up.railway.app/graphql/subscriptions',
   connectionParams: async () => ({
     session: await getSession()
   }),
