@@ -39,7 +39,7 @@ async function startApolloServer() {
   // Creating the WebSocket server
   const wsServer = new WebSocketServer({
     server: httpServer,
-    path: '/graphql/subscriptions',
+    path: '/subscriptions',
   });
 
   // WebSocketServer start listening.
