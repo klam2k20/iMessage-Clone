@@ -1,6 +1,4 @@
-import { ParticipantPopulated } from "@/../backend/src/util/types";
-import { id } from "date-fns/locale";
-import { SearchedUser } from "./types";
+import { ParticipantPopulated } from "@/src/util/types";
 
 export function formatConversationName(userId: string, participants: Array<ParticipantPopulated>) {
   const usernames = participants.filter(p => p.user.id != userId).map(p => p.user.username);

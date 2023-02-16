@@ -1,4 +1,4 @@
-import { ConversationPopulated, ParticipantPopulated } from '@/../backend/src/util/types';
+import { ConversationPopulated, ParticipantPopulated } from '@/src/util/types';
 import conversationOperations from '@/src/graphql/operations/conversation';
 import {
   DeleteConversationResponse,
@@ -128,13 +128,13 @@ const ConversationList: React.FC<IConversationListProps> = ({
           sortedConversations.map(c => {
             const participant = c.participants.find(
               (p: ParticipantPopulated) => p.user.id === userId
-            );
+            ) as ParticipantPopulated;
             return (
               <ConversationItem
                 key={c.id}
                 userId={userId}
                 conversation={c}
-                onClick={() => onViewConversation(c.id, c.hasSeenLatestMessage)}
+                onClick={() => onViewConversation(c.id, participant.hasSeenLatestMessage)}
                 isSelected={router.query.conversationId === c.id}
                 hasSeenLatestMessage={participant.hasSeenLatestMessage}
                 onDeleteConversation={() => onDeleteConversation(c.id)}

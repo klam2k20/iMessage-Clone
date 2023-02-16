@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "outDir": "dist/src",
+    "incremental": true,
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.test.ts", "./node_modules", "./node_modules/*"]
+}
