@@ -12,7 +12,7 @@ real-time notifications, and allows users to remove and/or add participants into
 
 - Responsive Design
 <p align="center">
-    <img src="imgs/responsive.gif" height="400" width="400">
+    <img src="imgs/responsive.gif" height="400">
 </p>
 
 - Group Conversations
