@@ -4,11 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && tsc",
     "postinstall": "prisma generate --schema=src/prisma/schema.prisma",
-    "start": "cross-env NODE_ENV=production node dist/src/index.js",
-    "dev": "nodemon src/index.ts",
-    "prestart": "npm run build"
+    "start": "node dist/src/index.js",
+    "dev": "nodemon src/index.ts"
   },
   "keywords": [],
   "author": "",
