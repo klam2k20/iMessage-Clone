@@ -80,7 +80,7 @@ async function startApolloServer() {
   }
   await server.start();
   app.use(
-    '/graphql',
+    '/',
     cors<cors.CorsRequest>(corsOption),
     json(),
     expressMiddleware(server, {
