@@ -76,7 +76,7 @@ npm install
 npm run dev
 ```
 
-# Frontend Installation
+### Frontend Installation
 
 ```sh
 cd ../frontend
