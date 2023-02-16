@@ -54,6 +54,7 @@ and delete and/or leave conversations.
 ### Prerequisites
 
 - yarn/npm
+- Setup Google Cloud Console Credentials for NextAuth
 - Sign up for MongoDB Atlas
   - Create a shared database
 
@@ -66,8 +67,8 @@ git clone https://github.com/klam2k20/iMessage-Clone.git
 # Create config.env
 cd iMessage-Clone/server
 PORT=4000
-MONG0DB_URI=<MONGODBURI>
 CLIENT_ORIGN=http://localhost:3000
+MONG0DB_URI=<MONGODBURI>
 
 # Install dependencies
 npm install
